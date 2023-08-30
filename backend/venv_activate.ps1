@@ -1,0 +1,1 @@
+Invoke-Expression '.\venv\Scripts\activate.ps1'
