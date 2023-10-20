@@ -15,20 +15,20 @@ type Props = {
 };
 
 function QuestionCard({ items }: Props) {
-  const [value, setValue] = React.useState("1");
+  const [value, setValue] = React.useState('0');
   return (
-    <Card my={2}>
-      <CardBody>
-        <Text my={4} fontWeight={600}>{items.question}</Text>
-        <RadioGroup onChange={setValue} value={value}>
+    <section>
+      <div>
+        <Text fontSize={16} my={4} fontWeight={600}>{items.question}</Text>
+        <RadioGroup onChange={setValue} value={value} >
           <Stack direction="column">
             {items.answers.map((answer, index) => (
-              <Radio checked={false} key={index} value={(index + 1).toString()}>{answer}</Radio>
+              <Radio key={index} value={(index + 1).toString()}><span>{answer}</span></Radio>
             ))}
           </Stack>
         </RadioGroup>
-      </CardBody>
-    </Card>
+      </div>
+    </section>
   );
 }
 

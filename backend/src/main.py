@@ -47,9 +47,16 @@ async def read_item(item_id: int):
 @app.get("/items/")
 async def get_item(skip: int = 0, limit: int = 10):
     items = [
-        {'item_name': 'Foo'},
-        {'item_name': 'Bar'},
-        {'item_name': 'Baz'},
+       {
+           'part_id': '1',
+           'part_name': 'Part 1',
+           'question_id': '1',
+           'question_name': 'Question 1',
+           'answer_id': '1',
+           'answer_name': 'Answer 1',
+           'marks': '10'
+
+       }
     ]
     return items[skip: skip + limit]
 

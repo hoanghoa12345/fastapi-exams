@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from ..database import SessionLocal, engine
 from . import models, service, schema
 import logging
+from dataclasses import asdict
 
 router = APIRouter(
     prefix="/api/v1/exams",
@@ -27,7 +28,8 @@ async def get_all_examinations_items(db: Session = Depends(get_db)):
     log.setLevel(logging.INFO)
     log.info('Get all examinations!')
 
-    return db.query(models.Exam).all()
+    return service.get_list_examination(db)
+
 
 
 @router.post('/')

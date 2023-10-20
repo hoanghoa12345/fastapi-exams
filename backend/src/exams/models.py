@@ -5,31 +5,52 @@ import uuid
 
 
 class Exam(Base):
-    __tablename__ = "examinations"
+    __tablename__ = "exams"
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
-    text = Column(String(256))
-    answers = relationship("Answer")
-    images = Column(String(256), nullable=True)
-    correctAnswer = Column(String(256), nullable=True)
-    type_id = Column(String(36), ForeignKey("types.id"), nullable=True)
-    parent_id = Column(String(36), ForeignKey("examinations.id"), nullable=True)
+    name = Column(String(256))
+    audio_file = Column(String(500))
 
 
-class Type(Base):
-    __tablename__ = "types"
+class Part(Base):
+    __tablename__ = "parts"
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
+    exam_id = Column(String(36), ForeignKey("exams.id"), nullable=True)
     name = Column(String(56), nullable=True)
+
+
+class QuestionGroup(Base):
+    __tablename__ = "question_groups"
+
+    id = Column(String(36), primary_key=True, default=uuid.uuid4)
+    part_id = Column(String(36), ForeignKey("parts.id"), nullable=True)
+
+
+class Question(Base):
+    __tablename__ = "questions"
+
+    id = Column(String(36), primary_key=True, default=uuid.uuid4)
+    part_id = Column(String(36), ForeignKey("parts.id"), nullable=True)
+    title = Column(String(256), nullable=True)
+    image = Column(String(500), default=False)
+    group_id = Column(String(36), ForeignKey("question_groups.id"), nullable=True)
 
 
 class Answer(Base):
     __tablename__ = "answers"
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
-    text = Column(String(256), nullable=True)
-    is_correct = Column(Boolean, default=False)
-    question_id = Column(String(36), ForeignKey("examinations.id"))
+    title = Column(String(256), nullable=True)
+    question_id = Column(String(36), ForeignKey("questions.id"), nullable=True)
+
+class CorrectAnswer(Base):
+
+    __tablename__ = "correct_answers"
+
+    id = Column(String(36), primary_key=True, default=uuid.uuid4)
+    question_id = Column(String(36), ForeignKey("questions.id"), nullable=True)
+    answer_id = Column(String(36), ForeignKey("answers.id"), nullable=True)
 
 
 Base.metadata.create_all(engine)

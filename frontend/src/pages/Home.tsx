@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Heading,
   Box,
   Flex,
   Text,
+  HStack,
+  VStack,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 
 import AnswerSheet from "@/components/answers/AnswerSheet";
@@ -204,10 +208,57 @@ const data = [
   },
 ];
 
+const useFetch = (path: string, method: string = 'GET') => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    setIsLoading(true);
+    setData([]);
+    setError(null);
+    console.log("fetching");
+    fetch(`http://localhost:3002${path}`, {
+      method: method
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setIsLoading(false);
+        setError(null);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err);
+        console.log(err);
+      });
+  }, []);
+
+  return { isLoading, data, error };
+};
+
 function Home({}: Props) {
-  
+  const { isLoading } = useFetch('/api/v1/exams');
   return (
-    <Flex>
+    <Box h="full">
+      <HStack h="full">
+        <VStack w={350} bg="gray.200" minH="full">
+          <Box>Left side menu 1</Box>
+        </VStack>
+        <Box h="full" w="full" overflowY='auto'>
+          {isLoading ? (
+            <Center h="full">
+              <Spinner />
+            </Center>
+          ) :  <QuestionPanel data={data} />}
+        </Box>
+      </HStack>
+    </Box>
+  );
+}
+
+export default Home;
+/**
+ *  <Flex>
       <Box bg="gray.50" w="400px" p={4}>
        <LeftSidebar/>
       </Box>
@@ -218,7 +269,4 @@ function Home({}: Props) {
         <AnswerSheet data={data} />
       </Box>
     </Flex>
-  );
-}
-
-export default Home;
+ */

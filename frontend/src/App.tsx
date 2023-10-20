@@ -27,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: '/create-test',
     element: <CreateTest/>
+  },
+  {
+    path: '/create-test/:id',
+    element: <CreateTest/>
   }
 ]);
 
