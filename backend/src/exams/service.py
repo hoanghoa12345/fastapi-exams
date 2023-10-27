@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import exc
+from sqlalchemy import desc, exc
 from . import models, schema
 from fastapi.encoders import jsonable_encoder
-
+from uuid import uuid4
 
 def get_list_examination(db: Session):
     data = (
@@ -32,15 +32,22 @@ def get_list_examination(db: Session):
     )
     result = []
     for exam, part, question_group, question, answer in data:
-        item = []
-        item.append(exam)
-        item.append(part)
-        item.append(question_group)
-        item.append(question)
-        item.append(answer)
-        result.append(item)
-
-    return result
+        exam = jsonable_encoder(exam)
+        part = jsonable_encoder(part)
+        question_group = jsonable_encoder(question_group)
+        question = jsonable_encoder(question)
+        answer = jsonable_encoder(answer)
+        result.append(
+            {
+                "exam": exam,
+                "part": part,
+                "question_group": question_group,
+                "question": question,
+                "answer": answer,
+            }
+        )
+    
+    return result 
 
 
 def create_new_examination(db: Session, exam: schema.ExamInput):
@@ -74,3 +81,43 @@ def seed_types_of_examinations(db: Session):
     )
     db.commit()
     return {"status": "Success", "error": None, "data": None}
+
+def get_examinations_by_exam_id(db: Session, exam_id: str):
+    exam_db = db.query(models.Exam).filter(models.Exam.id == exam_id).first()
+    # exam_db = db.query(models.Exam).join(models.Part).filter(models.Exam.id == exam_id).order_by(models.Part.name.desc()).first()
+    return schema.ExamSchema.from_orm(exam_db)
+
+def get_parts_by_exam_id(db: Session, exam_id: str):
+    part_db =db.query(models.Part).filter(models.Part.exam_id == exam_id).order_by(models.Part.name.asc()).all()
+    part_db = [schema.PartSchema.from_orm(part) for part in part_db]
+    return part_db
+
+def get_question_groups_by_part_id(db: Session, part_id: str):
+    return db.query(models.QuestionGroup).filter(models.QuestionGroup.part_id == part_id).all()
+
+def get_questions_by_question_group_id(db: Session, question_group_id: str):
+    return db.query(models.Question).filter(models.Question.group_id == question_group_id).all()
+
+def get_answers_by_question_id(db: Session, question_id: str):
+    return db.query(models.Answer).filter(models.Answer.question_id == question_id).all()
+
+def create_new_part(db: Session, part: schema.PartInput):
+    db_part = models.Part(
+        id=uuid4(),
+        name=part.name,
+        exam_id=part.exam_id,
+    )
+    db.add(db_part)
+    db.commit()
+    db.refresh(db_part)
+    return db_part
+
+def create_new_question_group(db: Session, question_group: schema.QuestionGroupInput):
+    db_question_group = models.QuestionGroup(
+        id=uuid4(),
+        part_id=question_group.part_id,
+    )
+    db.add(db_question_group)
+    db.commit()
+    db.refresh(db_question_group)
+    return db_question_group

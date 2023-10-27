@@ -13,231 +13,18 @@ import {
 import AnswerSheet from "@/components/answers/AnswerSheet";
 import QuestionPanel from "@/components/questions/QuestionPanel";
 import LeftSidebar from "@/components/left-sidebar/LeftSidebar";
+import { useFetch } from "@/hooks/useFetch";
+import { Navigate, useParams } from "react-router-dom";
+import { Exam } from "@/types";
+import ErrorPage from "./ErrorPage";
 
-type Props = {};
-
-const data = [
-  {
-    testPart: {
-      name: "1",
-      items: [
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-      ],
-    },
-  },
-  {
-    testPart: {
-      name: "2",
-      items: [
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-      ],
-    },
-  },
-  {
-    testPart: {
-      name: "3",
-      items: [
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-      ],
-    },
-  },
-  {
-    testPart: {
-      name: "4",
-      items: [
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-      ],
-    },
-  },
-  {
-    testPart: {
-      name: "5",
-      items: [
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-      ],
-    },
-  },
-  {
-    testPart: {
-      name: "6",
-      items: [
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-      ],
-    },
-  },
-  {
-    testPart: {
-      name: "7",
-      items: [
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-        {
-          question: "question",
-          answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
-        },
-      ],
-    },
-  },
-];
-
-const useFetch = (path: string, method: string = 'GET') => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
-  useEffect(() => {
-    setIsLoading(true);
-    setData([]);
-    setError(null);
-    console.log("fetching");
-    fetch(`http://localhost:3002${path}`, {
-      method: method
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setIsLoading(false);
-        setError(null);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        setError(err);
-        console.log(err);
-      });
-  }, []);
-
-  return { isLoading, data, error };
-};
-
-function Home({}: Props) {
-  const { isLoading } = useFetch('/api/v1/exams');
+function Home() {
+  const {testId} = useParams();
+  const { isLoading, data, error } = useFetch<Exam>(`/api/v1/exams/${testId}`);
+  if(error) return <ErrorPage/>;
+//   if (isLoading) return <div><Spinner/></div>;
+//   if (error) return <div>Error: {error?.message}
+  
   return (
     <Box h="full">
       <HStack h="full">
@@ -249,7 +36,7 @@ function Home({}: Props) {
             <Center h="full">
               <Spinner />
             </Center>
-          ) :  <QuestionPanel data={data} />}
+          ) : data ? <QuestionPanel data={data} /> : null}
         </Box>
       </HStack>
     </Box>

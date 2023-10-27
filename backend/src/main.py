@@ -22,7 +22,9 @@ app.include_router(examRouter)
 
 @app.get('/')
 async def root():
-    return {'message': 'Hello World', 'status': 'success'}
+    return {'message': 'Hello World',
+            'status': 'success',
+            'docs': {'docs': '/docs','redoc': '/redoc'}}
 
 
 @app.get('/random')

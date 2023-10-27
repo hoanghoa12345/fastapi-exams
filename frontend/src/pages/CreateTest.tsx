@@ -1,94 +1,220 @@
-import React, { useState, useEffect } from 'react'
-import { Box, FormControl, Heading, FormLabel, Stack, Select, Input, InputGroup, InputLeftAddon, Button } from '@chakra-ui/react'
-import { getAllExams } from '@/services/getExams'
-type Props = {}
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  FormControl,
+  Heading,
+  FormLabel,
+  Stack,
+  Select,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  Button,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from '@chakra-ui/react'
+import { ExamApi } from "@/services/getExams";
+import { Exam, Part } from "@/types";
+type Props = {};
 
-function CreateTest({ }: Props) {
-  const [selectAnswerType, setSelectAnsweType] = useState(4)
-  const [answerArr, setAnswerArr] = useState([1, 2, 3, 4])
+function CreateTest({}: Props) {
+  const [selectAnswerType, setSelectAnswerType] = useState(4);
+  const [answerArr, setAnswerArr] = useState([1, 2, 3, 4]);
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [parts, setParts] = useState<Part[]>([]);
+  const [part, setPart] = useState<Part>()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const initialRef = React.useRef(null)
+  const toast = useToast()
 
-  const handleSelectAnswerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(e.target.value);
-    if (e.target.value === '4') {
-      setAnswerArr([1, 2, 3, 4])
-    } else if (e.target.value === '3') {
-      setAnswerArr([1, 2, 3])
+  const handleSelectGroupQuestionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+
+  }
+
+  const handleSelectAnswerChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    if (e.target.value === "4") {
+      setAnswerArr([1, 2, 3, 4]);
+    } else if (e.target.value === "3") {
+      setAnswerArr([1, 2, 3]);
+    }
+  };
+
+  const handleSelectExamChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const {data} = await ExamApi.getParts(e.target.value)
+    setParts(data);
+    
+  };
+
+  const handleSelectPartChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const partItem = parts.find((part) => part.id = e.target.value)
+    // console.log(partItem);
+    setPart(partItem)
+
+  };
+
+  const handleSubmitData = () => {
+    toast({
+      title: 'Question created.',
+      description: "Question created",
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    })
+  }
+
+  const createNewPart = async () => {
+    if(part && initialRef.current != null) {
+      const inputRef = initialRef.current as HTMLInputElement
+      const {data} = await ExamApi.createPart(part?.exam_id, inputRef.value)
+      setParts([...parts, data])
+      toast({
+        title: 'Part created.',
+        description: "Part created",
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
     }
   }
 
   useEffect(() => {
-    const fetchExams = async () => { const data = await getAllExams(); console.log(data) }
-    fetchExams()
-  }, [])
+    const fetchExams = async () => {
+      const {data} = await ExamApi.getAllExam();
+      setExams(data);
+    };
+    fetchExams();
+  }, []);
   return (
     <Box>
-      <Heading as='h3' size='lg'>
-        Create New Test
-      </Heading>
       <Box>
-        <FormControl>
-          <FormLabel>Choose Test: </FormLabel>
-          <Stack spacing={3}>
-            <Select variant="outline" placeholder="--Choose Test--">
-              <option value="1">Test 1</option>
-              <option value="2">Test 2</option>
+        <Heading as="h3" size="md">
+          Create New Test
+        </Heading>
+        <Box>
+          <FormControl>
+            <FormLabel fontSize={'sm'}>Choose Test: </FormLabel>
+            <Stack spacing={3}>
+              <Select
+                variant="outline"
+                placeholder="--Choose Test--"
+                size={"sm"}
+                onChange={handleSelectExamChange}
+              >
+                {exams.map((exam) => (
+                  <option key={exam.id} value={exam.id}>{exam.name}</option>
+                ))}
+              </Select>
+            </Stack>
+          </FormControl>
+
+          <FormControl isRequired>
+            <FormLabel fontSize={'sm'} flex={1}>Select Part</FormLabel>
+
+            <Select
+              placeholder="--Select Part--"
+              w="full"
+              size={'sm'}
+              onChange={handleSelectPartChange}
+            >
+              {
+                parts.map((part) => (
+                  <option key={part.id} value={part.id}>{part.name}</option>
+                ))
+              }
             </Select>
-          </Stack>
-        </FormControl>
+            <Button size='sm' variant={'outline'} onClick={onOpen}>New Part</Button>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel fontSize={'sm'}>Select Question Group</FormLabel>
+            <Select
+              placeholder="--Select Question Group--"
+              w="full"
+              size={'sm'}
+              onChange={handleSelectGroupQuestionChange}
+            >
+              {part?.question_groups.map((group) => (
+                <option key={group.id} value={group.id}>{group.id}</option>
+              ))}
+            </Select>
+          </FormControl>
+          <Button size='sm' variant={'outline'} onClick={onOpen}>New Question Group</Button>
+          <Box>
+            <FormControl isRequired>
+            <FormLabel fontSize={'sm'}>Enter Question</FormLabel>
+            <InputGroup size={'sm'}>
+              <InputLeftAddon children="1." />
+              <Input placeholder="Question" type="text" />
+            </InputGroup>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel fontSize={'sm'}>Select Answer Type</FormLabel>
+            <Select
+              placeholder="Select Type"
+              w="40"
+              size={'sm'}
+              onChange={handleSelectAnswerChange}
+            >
+              <option value="4">4 answers</option>
+              <option value="3">3 answers</option>
+            </Select>
+          </FormControl>
+          </Box>
+          
+          <FormControl isRequired>
+            <FormLabel fontSize={'sm'}>Enter Answers</FormLabel>
 
-        <FormControl isRequired>
-          <FormLabel>Select Part</FormLabel>
-
-          <Select
-            //    mt={4}
-            placeholder="--Select Part--"
-            w="full"
-          //  onChange={handleSelectChange}
-          >
-            <option value="part1">Part 1</option>
-            <option value="part2">Part 2</option>
-            <option value="part3">Part 3</option>
-            <option value="part4">Part 4</option>
-            <option value="part5">Part 5</option>
-            <option value="part6">Part 6</option>
-            <option value="part7">Part 7</option>
-          </Select>
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel>Enter Question</FormLabel>
-          <InputGroup>
-            <InputLeftAddon children="1." />
-            <Input placeholder="Question" type='text' />
-          </InputGroup>
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel>Select Answer Type</FormLabel>
-          <Select placeholder='Select Type' w='full' onChange={handleSelectAnswerChange}>
-            <option value='4'>4 answers</option>
-            <option value='3'>3 answers</option>
-          </Select>
-        </FormControl>
-        <FormControl isRequired>
-          <FormLabel>Enter Answers</FormLabel>
-
-          <Box>{
-            answerArr.map((index) => (
-
-              <InputGroup key={index}>
-                <InputLeftAddon children={index} />
-                <Input placeholder={`Answer ${index}`} type='text' />
-              </InputGroup>
-            ))
-
-          }</Box>
-
-        </FormControl>
-        <Button colorScheme='teal' type='button'>
-          Create
-        </Button>
+            <Box>
+              {answerArr.map((index) => (
+                <InputGroup key={index} size={'sm'}>
+                  <InputLeftAddon children={index} />
+                  <Input placeholder={`Answer ${index}`} type="text" />
+                </InputGroup>
+              ))}
+            </Box>
+          </FormControl>
+          <Button colorScheme="teal" type="button" size={'sm'} onClick={handleSubmitData}>
+            Create
+          </Button>
+        </Box>
       </Box>
+
+      <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+          <FormControl>
+              <FormLabel>Part name:</FormLabel>
+              <Input ref={initialRef} placeholder='Part 1' />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button  variant='solid' color={'cyan.500'} mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button colorScheme='blue' onClick={createNewPart}>Create</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
-  )
+  );
 }
 
-export default CreateTest
+export default CreateTest;
