@@ -19,6 +19,7 @@ class Part(Base):
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
     exam_id = Column(String(36), ForeignKey("exams.id"), nullable=True)
     name = Column(String(56), nullable=True)
+    part_index = Column(Integer, nullable=True)
     exams = relationship("Exam", back_populates="parts")
     question_groups = relationship("QuestionGroup", back_populates="parts")
 
@@ -27,7 +28,11 @@ class QuestionGroup(Base):
     __tablename__ = "question_groups"
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
+    name = Column(String(256), nullable=True)
+    paragraph = Column(String(500), nullable=True)
+    image = Column(String(500), nullable=True)
     part_id = Column(String(36), ForeignKey("parts.id"), nullable=True)
+    group_index = Column(Integer, nullable=True)
     parts = relationship("Part", back_populates="question_groups")
     questions = relationship("Question", back_populates="question_groups")
 
@@ -42,6 +47,7 @@ class Question(Base):
     group_id = Column(String(36), ForeignKey("question_groups.id"), nullable=True)
     answers = relationship("Answer", back_populates="question")
     question_groups = relationship("QuestionGroup", back_populates="questions")
+    question_index = Column(Integer, nullable=True)
 
 
 class Answer(Base):
@@ -49,11 +55,12 @@ class Answer(Base):
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
     title = Column(String(256), nullable=True)
+    answer_index = Column(Integer, nullable=True)
     question_id = Column(String(36), ForeignKey("questions.id"), nullable=True)
     question = relationship("Question", back_populates="answers")
 
-class CorrectAnswer(Base):
 
+class CorrectAnswer(Base):
     __tablename__ = "correct_answers"
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)

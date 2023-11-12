@@ -1,8 +1,9 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc, exc
 from . import models, schema
 from fastapi.encoders import jsonable_encoder
 from uuid import uuid4
+
 
 def get_list_examination(db: Session):
     data = (
@@ -46,60 +47,77 @@ def get_list_examination(db: Session):
                 "answer": answer,
             }
         )
-    
-    return result 
+
+    return result
 
 
 def create_new_examination(db: Session, exam: schema.ExamInput):
-    type = db.query(models.Type).filter(models.Type.name == exam.type).first()
-    if type:
-        try:
-            db_exam = models.Exam(
-                text=exam.text,
-                images=exam.images,
-                correctAnswer=exam.correctAnswer,
-                type_id=type.id,
-                parent_id=exam.parent_id,
-            )
-            db.add(db_exam)
-            db.commit()
-            db.refresh(db_exam)
-            return db_exam
-        except exc.SQLAlchemyError as error:
-            raise error
-    else:
-        raise Exception("Type not found")
-
-
-def seed_types_of_examinations(db: Session):
-    db.add_all(
-        [
-            models.Type(name="Test"),
-            models.Type(name="Part"),
-            models.Type(name="Question"),
-        ]
+    db_exam = models.Exam(
+        id=uuid4(),
+        name=exam.name,
+        audio_file=exam.audio_file,
     )
+    db.add(db_exam)
     db.commit()
-    return {"status": "Success", "error": None, "data": None}
+    db.refresh(db_exam)
+    return db_exam
+
 
 def get_examinations_by_exam_id(db: Session, exam_id: str):
-    exam_db = db.query(models.Exam).filter(models.Exam.id == exam_id).first()
-    # exam_db = db.query(models.Exam).join(models.Part).filter(models.Exam.id == exam_id).order_by(models.Part.name.desc()).first()
+    exam_db = (
+        db.query(models.Exam)
+        .options(joinedload(models.Exam.parts))
+        .filter(models.Exam.id == exam_id)
+        .first()
+    )
+
+    if exam_db:
+        # Manually sort the parts in Python based on part_index
+        exam_db.parts = sorted(exam_db.parts, key=lambda part: part.part_index)
+
     return schema.ExamSchema.from_orm(exam_db)
 
+    # exam_db = (
+    #     db.query(models.Exam)
+    #     .options(joinedload(models.Exam.parts))
+    #     .filter(models.Exam.id == exam_id)
+    #     .join(models.Part, models.Exam.parts)  # Explicitly join on the relationship
+    #     .order_by(models.Part.part_index.asc())  # Order by the Part's part_index
+    #     .first()
+    # )
+    # return schema.ExamSchema.from_orm(exam_db)
+
+
+def get_examination_by_id(db: Session, exam_id: str):
+    return db.query(models.Exam).filter(models.Exam.id == exam_id).first()
+
+
 def get_parts_by_exam_id(db: Session, exam_id: str):
-    part_db =db.query(models.Part).filter(models.Part.exam_id == exam_id).order_by(models.Part.name.asc()).all()
+    """
+    Get exam full data by exam id
+    :param db:
+    :param exam_id:
+    :return:
+    """
+    part_db = db.query(models.Part).filter(models.Part.exam_id == exam_id).order_by(models.Part.name.asc()).all()
     part_db = [schema.PartSchema.from_orm(part) for part in part_db]
     return part_db
 
+
 def get_question_groups_by_part_id(db: Session, part_id: str):
-    return db.query(models.QuestionGroup).filter(models.QuestionGroup.part_id == part_id).all()
+    print('Get question groups by part id')
+    db_question_groups = (db.query(models.QuestionGroup).filter(models.QuestionGroup.part_id == part_id).all())
+    db_question_groups = [schema.QuestionGroupSchema.from_orm(question_group) for question_group in db_question_groups]
+    return db_question_groups
+
 
 def get_questions_by_question_group_id(db: Session, question_group_id: str):
     return db.query(models.Question).filter(models.Question.group_id == question_group_id).all()
 
+
 def get_answers_by_question_id(db: Session, question_id: str):
     return db.query(models.Answer).filter(models.Answer.question_id == question_id).all()
+
 
 def create_new_part(db: Session, part: schema.PartInput):
     db_part = models.Part(
@@ -112,6 +130,7 @@ def create_new_part(db: Session, part: schema.PartInput):
     db.refresh(db_part)
     return db_part
 
+
 def create_new_question_group(db: Session, question_group: schema.QuestionGroupInput):
     db_question_group = models.QuestionGroup(
         id=uuid4(),
@@ -121,3 +140,61 @@ def create_new_question_group(db: Session, question_group: schema.QuestionGroupI
     db.commit()
     db.refresh(db_question_group)
     return db_question_group
+
+
+def get_all_parts(db: Session):
+    return db.query(models.Part).all()
+
+
+def create_new_answer(db: Session, answer: schema.AnswerInput):
+    db_answer = models.Answer(
+        id=uuid4(),
+        question_id=answer.question_id,
+        title=answer.title,
+        answer_index=answer.answer_index
+    )
+    db.add(db_answer)
+    db.commit()
+    db.refresh(db_answer)
+    return db_answer
+
+
+def create_new_question(db: Session, question: schema.QuestionInputGroup):
+    if not question.group_id:
+        group = create_new_question_group(db, schema.QuestionGroupInput(part_id=question.part_id))
+        group_id = group.id
+    else:
+        group_id = question.group_id
+    if not question.image:
+        question.image = None
+    db_question = models.Question(
+        id=uuid4(),
+        group_id=group_id,
+        title=question.question,
+        image=question.image,
+        part_id=question.part_id,
+        question_index=0
+    )
+    db.add(db_question)
+    db.commit()
+    db.refresh(db_question)
+
+    answers = []
+
+    for index, answer in enumerate(question.answers):
+        answer_input = schema.AnswerInput(
+            question_id=db_question.id,
+            title=answer,
+            answer_index=index
+        )
+        new_answer = create_new_answer(db, answer_input)
+        answers.append(new_answer)
+
+    db_correct_answer = models.CorrectAnswer(
+        question_id=db_question.id,
+        answer_id=answers[question.correctAnswerIndex].id
+    )
+    db.add(db_correct_answer)
+    db.commit()
+    db.refresh(db_correct_answer)
+    return [db_question, answers, db_correct_answer]

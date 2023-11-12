@@ -3,7 +3,7 @@
 ```
 .\venv\Scripts\activate.ps1
 ```
-2. Start uvicorn
+2.Start uvicorn
 ```
 uvicorn main:app --reload --port=3002
 ```
@@ -11,7 +11,19 @@ uvicorn main:app --reload --port=3002
 ```
 pip freeze > requirements.txt
 ```
-[https://github.com/zhanymkanov/fastapi-best-practices#1-project-structure-consistent--predictable](https://github.com/zhanymkanov/fastapi-best-practices#1-project-structure-consistent--predictable)
 
-exam part_id
-part id name //
+Generate alembic INI file:
+```commandline
+ alembic init alembic
+```
+
+Create new migrate
+```commandline
+alembic revision -m "add_new_part_index_column_parts_table"
+```
+
+Run migrate
+```commandline
+alembic upgrade head
+```
+

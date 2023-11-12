@@ -1,12 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
+from load_dotenv import load_dotenv
 
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-SQLALCHEMY_DATABASE_URL = "mysql+mysqldb://root:root@localhost:3307/fastapi_db?charset=utf8mb4"
+load_dotenv()
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, echo=False
+    os.getenv('SQLALCHEMY_DATABASE_URL'), echo=False
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
