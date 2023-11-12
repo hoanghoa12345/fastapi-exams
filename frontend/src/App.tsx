@@ -2,15 +2,30 @@ import "./App.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "@/pages/Home";
-import MainTest from "@/pages/MainTest";
 import CreateTest from "@/pages/CreateTest";
 import ListTest from "@/pages/ListTest";
 import ErrorPage from "@/pages/ErrorPage";
+import ViewTest from "@/pages/ViewTest";
+import "@fontsource/poppins";
+import LoginPage from "./pages/auth/Login";
 
 const theme = extendTheme({
   fonts: {
-    // heading: `'Raleway', sans-serif`,
-    // body: `'Raleway', sans-serif`,
+    heading: `'Poppins', sans-serif`,
+    body: `'Poppins', sans-serif`,
+    mono: "Consolas, monospace",
+  },
+  fontSizes: {
+    xs: "12px",
+    sm: "14px",
+    md: "16px",
+    lg: "18px",
+    xl: "20px",
+    "2xl": "24px",
+    "3xl": "28px",
+    "4xl": "36px",
+    "5xl": "48px",
+    "6xl": "64px",
   },
 });
 
@@ -18,18 +33,26 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <ListTest />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/tests/:testId",
     element: <Home />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/create-test",
     element: <CreateTest />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/create-test/:id",
-    element: <CreateTest />,
+    element: <ViewTest />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
   },
   {
     path: "*",

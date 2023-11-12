@@ -1,18 +1,37 @@
-import { Box, Text } from '@chakra-ui/react'
-import React from 'react'
-import imageSrc from '@/assets/page_not_found.svg'
-import { useRouteError } from 'react-router-dom';
+import { Box, Text } from "@chakra-ui/react";
+import imageSrc from "@/assets/page_not_found.svg";
+import { useRouteError } from "react-router-dom";
+import { Kbd, Code } from "@chakra-ui/react";
 const ErrorPage = () => {
-    let error = useRouteError();
-  return (
-    <Box w='full' h='full' display={'flex'} justifyContent={'center'} alignItems={'center'}>
-        <div>
-        <img src={imageSrc} alt='404 not found' width={300} height={300} />
-           <Text fontSize={'2xl'} fontWeight={500} textAlign={'center'} py={4}>Page not found</Text> 
-           {JSON.stringify(error)}
-        </div>
-    </Box>
-  )
-}
+  let error: any = useRouteError();
 
-export default ErrorPage
+  return (
+    <Box
+      w="full"
+      h="full"
+      display={"flex"}
+      justifyContent={"center"}
+      alignItems={"center"}>
+      <Box display="flex" alignItems="center" flexDirection="column">
+        <img src="/images/shared/404-banner.png" alt="404 not found" width={300} height={300} />
+        <Text fontSize={"lg"} fontWeight={400} textAlign={"center"} py={4} color="gray.400">
+          Sorry, an unexpected error has occurred.
+        </Text>
+        <Text fontSize="sm" color="red.500">
+          {error?.message}
+        </Text>
+        {import.meta.env.DEV ? (
+          <Box maxWidth="6xl">
+            <Code children={error?.stack} />
+          </Box>
+        ) : null}
+
+        <Text fontSize="sm" color="gray.400" textAlign={"center"}>
+          You can try to <Kbd>F5</Kbd> the page.
+        </Text>
+      </Box>
+    </Box>
+  );
+};
+
+export default ErrorPage;
