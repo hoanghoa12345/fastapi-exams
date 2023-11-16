@@ -191,11 +191,11 @@ CreateTest.Exams = ({ onOpenModal }: ExamProps) => {
   ];
 
   const handleViewExam = (id: string) => {
-    navigate(`/create-test/${id}`);
+    navigate(`/admin/create-test/${id}`);
   };
 
   const handleEditAction = (id: string) => {
-    navigate(`/create-test/${id}`);
+    navigate(`/admin/create-test/${id}`);
   }
 
   useEffect(() => {

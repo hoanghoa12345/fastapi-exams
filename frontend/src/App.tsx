@@ -8,6 +8,7 @@ import ErrorPage from "@/pages/ErrorPage";
 import ViewTest from "@/pages/ViewTest";
 import "@fontsource/poppins";
 import LoginPage from "./pages/auth/Login";
+import AdminLayout from "./layouts/AdminLayout";
 
 const theme = extendTheme({
   fonts: {
@@ -41,18 +42,23 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/create-test",
-    element: <CreateTest />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/create-test/:id",
-    element: <ViewTest />,
-    errorElement: <ErrorPage />,
-  },
-  {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/admin",
+    errorElement: <ErrorPage />,
+    element: <AdminLayout />,
+    children: [
+      {
+        path: "create-test",
+        element: <CreateTest />,
+      },
+      {
+        path: "create-test/:id",
+        element: <ViewTest />,
+      },
+    ],
   },
   {
     path: "*",

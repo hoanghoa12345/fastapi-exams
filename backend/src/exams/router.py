@@ -88,3 +88,11 @@ async def get_all_parts(db: Session = Depends(get_db)):
 async def post_create_new_question(db: Session = Depends(get_db),
                                    question: schema.QuestionInputGroup = None):
     return service.create_new_question(db, question)
+
+
+@exam_router.put('/question-groups/{question_group_id}', tags=['Question Groups'])
+async def update_question_group(db: Session = Depends(get_db), question_group_id: str = None,
+                                      data: schema.QuestionGroupUpdate = None):
+    return service.update_question_group(db, question_group_id, data)
+
+

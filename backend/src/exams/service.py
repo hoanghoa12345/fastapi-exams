@@ -105,7 +105,6 @@ def get_parts_by_exam_id(db: Session, exam_id: str):
 
 
 def get_question_groups_by_part_id(db: Session, part_id: str):
-    print('Get question groups by part id')
     db_question_groups = (db.query(models.QuestionGroup).filter(models.QuestionGroup.part_id == part_id).all())
     db_question_groups = [schema.QuestionGroupSchema.from_orm(question_group) for question_group in db_question_groups]
     return db_question_groups
@@ -120,10 +119,16 @@ def get_answers_by_question_id(db: Session, question_id: str):
 
 
 def create_new_part(db: Session, part: schema.PartInput):
+    last_part = db.query(models.Part).order_by(models.Part.part_index.desc()).first()
+    if last_part:
+        part.part_index = last_part.part_index + 1
+    else:
+        part.part_index = 1
     db_part = models.Part(
         id=uuid4(),
         name=part.name,
         exam_id=part.exam_id,
+        part_index=part.part_index
     )
     db.add(db_part)
     db.commit()
@@ -198,3 +203,16 @@ def create_new_question(db: Session, question: schema.QuestionInputGroup):
     db.commit()
     db.refresh(db_correct_answer)
     return [db_question, answers, db_correct_answer]
+
+
+def update_question_group(db: Session, question_group_id: str, data: schema.QuestionGroupUpdate):
+    db_question_group = db.query(models.QuestionGroup).filter(models.QuestionGroup.id == question_group_id).first()
+    if data.name:
+        db_question_group.name = data.name
+    if data.image:
+        db_question_group.image = data.name
+    if data.paragraph:
+        db_question_group.paragraph = data.name
+    db.commit()
+    db.refresh(db_question_group)
+    return db_question_group

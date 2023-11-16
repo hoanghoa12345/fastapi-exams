@@ -9,4 +9,6 @@ export const ExamApi = {
   createPart: (examId: string, name: string) => api.post(`api/v1/exams/${examId}/parts?name=${name}`),
   createQuestionGroup: (partId: string, name: string) => api.post(`api/v1/exams/question-groups`, { part_id: partId }),
   createQuestion: (formData: any) => api.post(`api/v1/exams/questions`, formData),
+  //Question group
+  updateQuestionGroup: (questionGroupId: string, data: any) => api.put(`api/v1/exams/question-groups/${questionGroupId}`, data),
 };

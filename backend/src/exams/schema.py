@@ -11,6 +11,7 @@ class ExamInput(BaseModel):
 class PartInput(BaseModel):
     name: str
     exam_id: str
+    part_index: str | None
 
 
 class QuestionGroupInput(BaseModel):
@@ -100,3 +101,9 @@ class QuestionInputGroup(BaseModel):
     part_id: str
     group_id: str | None
     image: str | None
+
+
+class QuestionGroupUpdate(BaseModel):
+    name: str | None
+    image: str | None
+    paragraph: str | None

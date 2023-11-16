@@ -70,7 +70,7 @@ const ViewTest = () => {
 
   const loadTabData = (index: number) => {
     if (!loadedTabs.includes(index)) {
-      console.log(`Loading data for tab ${index}`);
+      // console.log(`Loading data for tab ${index}`);
       setLoadedTabs((prevTabs) => [...prevTabs, index]);
       const partId = parts[index].id;
       fetchQuestionGroup(partId, index);
@@ -260,7 +260,8 @@ ViewTest.QuestionGroups = ({ questionGroups }: { questionGroups?: QuestionGroup[
       {questionGroups?.map((questionGroup) => (
         <QuestionGroupCard
         key={questionGroup.id}
-        title={questionGroup.name || '-'}
+        id={questionGroup.id}
+        title={questionGroup.name}
         questions={questionGroup.questions}
         onAddQuestion={() => handleAddQuestion(questionGroup)}
         />

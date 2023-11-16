@@ -1,3 +1,4 @@
+import React from "react";
 import { useFetch } from "@/hooks/useFetch";
 import {
   Avatar,
@@ -10,7 +11,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
+import { UserMenu } from "@/components/menus/UserMenu";
 import { useNavigate } from "react-router-dom";
 type Exam = {
   id: string;
@@ -26,7 +27,7 @@ const ListTest = () => {
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <Box px={4}>English Test</Box>
           <Box px={4}>
-            <Avatar name="User" size="md" />
+           <UserMenu />
           </Box>
         </Flex>
       </Box>
