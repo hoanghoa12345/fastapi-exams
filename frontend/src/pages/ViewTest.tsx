@@ -29,7 +29,7 @@ import {
   CardHeader,
   CardBody,
 } from "@chakra-ui/react";
-import { Exam, Part, QuestionGroup } from "@/types";
+import { QuestionGroup } from "@/types";
 import { ExamApi } from "@/services/getExams";
 import { useCreateTestStore } from "@/stores/useCreateTest";
 import CreateQuestionModal from "@/components/modals/CreateQuestionModal";
@@ -66,11 +66,10 @@ const ViewTest = () => {
     const { data } = await ExamApi.getQuestionGroups(partId);
     questionGroups[index] = data;
     setQuestionGroups(questionGroups);
-  };  
+  };
 
   const loadTabData = (index: number) => {
     if (!loadedTabs.includes(index)) {
-      // console.log(`Loading data for tab ${index}`);
       setLoadedTabs((prevTabs) => [...prevTabs, index]);
       const partId = parts[index].id;
       fetchQuestionGroup(partId, index);
@@ -133,15 +132,14 @@ const ViewTest = () => {
     if (id) {
       fetchParts(id);
       fetchExam(id);
-    }   
+    }
   }, []);
 
   useEffect(() => {
-    if (parts.length > 0) {
-      setPart(parts[0]);
-      fetchQuestionGroup(parts[0].id, 0);
+    if(parts.length > 0) {
+      loadTabData(tabIndex);
     }
-  },[parts])
+  }, [parts]);
 
   return (
     <Box h="full" w="full" p={4}>
@@ -167,7 +165,9 @@ const ViewTest = () => {
         onChange={(index: number) => {
           setTabIndex(index);
           loadTabData(index);
-        }}>
+        }}
+        isLazy={true}
+        >
         <TabList>
           {parts.map((part) => (
             <Tab onClick={() => setPart(part)} key={part.id}>
@@ -221,9 +221,9 @@ ViewTest.Modal = ({ isOpen, onClose, initialRef, title, action }: ModalProps) =>
 ViewTest.QuestionGroups = ({ questionGroups }: { questionGroups?: QuestionGroup[] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentQuestionGroup, setCurrentQuestionGroup] = useState<QuestionGroup | null>(null);
-  
+
   const toast = useToast();
-  
+
   const handleAddQuestion = (questionGroup: QuestionGroup) => {
     setCurrentQuestionGroup(questionGroup);
     setIsOpen(true);
@@ -253,20 +253,20 @@ ViewTest.QuestionGroups = ({ questionGroups }: { questionGroups?: QuestionGroup[
         isClosable: true,
       });
     }
-  }
+  };
 
   return (
     <Box mt={4}>
       {questionGroups?.map((questionGroup) => (
         <QuestionGroupCard
-        key={questionGroup.id}
-        id={questionGroup.id}
-        title={questionGroup.name}
-        questions={questionGroup.questions}
-        onAddQuestion={() => handleAddQuestion(questionGroup)}
+          key={questionGroup.id}
+          id={questionGroup.id}
+          title={questionGroup.name}
+          questions={questionGroup.questions}
+          onAddQuestion={() => handleAddQuestion(questionGroup)}
         />
       ))}
-       <CreateQuestionModal isOpen={isOpen} onClose={() => setIsOpen(false)} onSubmit={handleCreateQuestion} />
+      <CreateQuestionModal isOpen={isOpen} onClose={() => setIsOpen(false)} onSubmit={handleCreateQuestion} />
     </Box>
   );
 };

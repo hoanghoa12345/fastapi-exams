@@ -95,4 +95,6 @@ async def update_question_group(db: Session = Depends(get_db), question_group_id
                                       data: schema.QuestionGroupUpdate = None):
     return service.update_question_group(db, question_group_id, data)
 
-
+@exam_router.put('/questions/{question_id}', tags=['Questions'])
+async def update_question(db: Session = Depends(get_db), question_id: str = None, data: schema.QuestionUpdate = None):
+    return service.update_question_answer(db, question_id, data)

@@ -11,4 +11,6 @@ export const ExamApi = {
   createQuestion: (formData: any) => api.post(`api/v1/exams/questions`, formData),
   //Question group
   updateQuestionGroup: (questionGroupId: string, data: any) => api.put(`api/v1/exams/question-groups/${questionGroupId}`, data),
+  //Question
+  updateQuestion: (questionId: string, data: any) => api.put(`api/v1/exams/questions/${questionId}`, data),
 };

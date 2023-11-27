@@ -35,3 +35,10 @@ export interface Answer {
   title: string;
   question_id: string;
 }
+
+export interface QuestionGroupUpdate {
+  question: string;
+  questionId: string;
+  answers: Answer[];
+  correctAnswerIndex: number;
+}

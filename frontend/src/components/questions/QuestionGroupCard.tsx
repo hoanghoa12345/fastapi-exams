@@ -14,9 +14,11 @@ import {
   HStack,
   useToast,
 } from "@chakra-ui/react";
-import { Question } from "@/types";
+import { Question, QuestionGroupUpdate } from "@/types";
 import { PencilIcon, ChevronUpDownIcon } from "../icons";
 import { ExamApi } from "@/services/getExams";
+import CreateQuestionModal from "../modals/CreateQuestionModal";
+import EditQuestionModal from "../modals/EditQuestionModal";
 
 interface QuestionGroupCardProps {
   id: string;
@@ -29,6 +31,8 @@ const QuestionGroupCard: React.FC<QuestionGroupCardProps> = ({id, title, questio
   const [titleEditable, setTitleEditable] = useState<boolean>(false);
   const [titleValue, setTitleValue] = useState<string>(title || "");
   const toast = useToast();
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const [editData, setEditData] = useState<Question>()
 
   const handleEditTitle = async () => {
     if (!titleEditable) {
@@ -65,6 +69,21 @@ const QuestionGroupCard: React.FC<QuestionGroupCardProps> = ({id, title, questio
     setTitleValue(e.target.value);
   };
 
+  const handleOpenModalEdit = (question: Question) => {
+    setEditData(question)
+    setIsOpenModal(true)
+  }
+
+  const handleUpdateQuestion = (data: QuestionGroupUpdate) => {
+    console.log(data);
+    const update = ExamApi.updateQuestion(data.questionId, data)
+    toast.promise(update, {
+      success: { title: 'Update success', description: 'Update question success' },
+      error: { title: 'Update error', description: 'Something wrong' },
+      loading: { title: 'Loading', description: 'Please wait' },
+    })
+  }
+
   return (
     <Box borderWidth="1px" borderRadius="lg" p="4" mb={4}>
       <Flex justifyContent="space-between" alignItems="center">
@@ -84,11 +103,12 @@ const QuestionGroupCard: React.FC<QuestionGroupCardProps> = ({id, title, questio
             <HStack>
               <IconButton variant="ghost" aria-label="Move question" icon={<ChevronUpDownIcon width={20} height={20} />} />
               <Text>{question.title}</Text>
-              <IconButton variant="ghost" aria-label="Edit question" icon={<PencilIcon width={20} height={20} />} />
+              <IconButton onClick={() => handleOpenModalEdit(question)} variant="ghost" aria-label="Edit question" icon={<PencilIcon width={20} height={20} />} />
             </HStack>
           </Box>
         ))}
       </VStack>
+      <EditQuestionModal isOpen={isOpenModal} onClose={() => setIsOpenModal(false)} onSubmit={handleUpdateQuestion} initData={editData} />
     </Box>
   );
 };

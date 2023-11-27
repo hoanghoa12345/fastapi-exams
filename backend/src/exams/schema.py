@@ -107,3 +107,12 @@ class QuestionGroupUpdate(BaseModel):
     name: str | None
     image: str | None
     paragraph: str | None
+
+class QuestionUpdate(BaseModel):
+    title: str | None
+    image: str | None
+    group_id: str | None
+    answers: List[AnswerSchema]
+    correctAnswerIndex: int
+    question: str
+    image: str | None
