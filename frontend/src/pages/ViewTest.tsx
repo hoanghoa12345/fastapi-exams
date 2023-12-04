@@ -122,8 +122,10 @@ const ViewTest = () => {
     };
 
     const fetchExam = async (id: string) => {
-      const { data } = await ExamApi.getExam(id);
-      setCurrentExam(data);
+      setTimeout(async () => {
+        const { data } = await ExamApi.getExam(id);
+        setCurrentExam(data);
+      }, 200);
     };
 
     if (id) {
@@ -133,7 +135,7 @@ const ViewTest = () => {
   }, []);
 
   useEffect(() => {
-    if(parts.length > 0) {
+    if (parts.length > 0) {
       loadTabData(tabIndex);
     }
   }, [parts]);
@@ -163,8 +165,7 @@ const ViewTest = () => {
           setTabIndex(index);
           loadTabData(index);
         }}
-        isLazy={true}
-        >
+        isLazy={true}>
         <TabList>
           {parts.map((part) => (
             <Tab onClick={() => setPart(part)} key={part.id}>
