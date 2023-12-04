@@ -25,9 +25,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Card,
-  CardHeader,
-  CardBody,
 } from "@chakra-ui/react";
 import { QuestionGroup } from "@/types";
 import { ExamApi } from "@/services/getExams";
@@ -157,7 +154,7 @@ const ViewTest = () => {
         </BreadcrumbItem>
       </Breadcrumb>
       <Stack spacing={4} direction="row" justifyContent="end">
-        <Button colorScheme="teal" onClick={onOpen}>
+        <Button colorScheme="blue" onClick={onOpen}>
           Create part
         </Button>
       </Stack>
@@ -179,7 +176,7 @@ const ViewTest = () => {
         <TabPanels>
           {parts.map((part, index) => (
             <TabPanel key={part.id}>
-              <Button type="button" onClick={() => setIsOpenModal(true)} colorScheme="teal">
+              <Button type="button" onClick={() => setIsOpenModal(true)} colorScheme="blue">
                 Create Questions
               </Button>
               <ViewTest.QuestionGroups questionGroups={questionGroups[index]} />

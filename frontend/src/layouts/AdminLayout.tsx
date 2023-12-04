@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { HStack, VStack, Box, Flex, Spacer, Text, Button, Stack, Divider, Heading, IconButton, Icon, Avatar } from "@chakra-ui/react";
 const AdminLayout = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const menuItems = [
     {
       name: "Dashboard",
@@ -28,10 +28,16 @@ const AdminLayout = () => {
       name: "Create Test",
       path: "/admin/create-test",
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width={24} height={24}>
-  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-</svg>
-
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          width={24}
+          height={24}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
       ),
     },
   ];
@@ -57,7 +63,9 @@ const AdminLayout = () => {
                 gap={2}
                 _hover={{ backgroundColor: "gray.200" }}
                 w="full"
-                rounded="md" role="button" onClick={() => navigate(item.path)}>
+                rounded="md"
+                role="button"
+                onClick={() => navigate(item.path)}>
                 {item.icon}
                 <Text>{item.name}</Text>
               </Box>
@@ -65,7 +73,9 @@ const AdminLayout = () => {
           </VStack>
           <Divider />
           <VStack py={4}>
-            <Button variant='outline' w='full'>Logout</Button>
+            <Button variant="outline" w="full">
+              Logout
+            </Button>
           </VStack>
         </VStack>
         <Divider orientation="vertical" />
