@@ -93,7 +93,7 @@ const QuestionGroupCard: React.FC<QuestionGroupCardProps> = ({id, title, questio
           </Heading>
           <IconButton onClick={handleEditTitle} aria-label="Edit question group title" icon={<PencilIcon width={24} height={24} />} />
         </HStack>
-        <Button colorScheme="teal" onClick={onAddQuestion}>
+        <Button colorScheme="blue" onClick={onAddQuestion}>
           Add New Question
         </Button>
       </Flex>

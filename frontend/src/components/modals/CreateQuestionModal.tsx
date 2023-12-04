@@ -55,7 +55,7 @@ const CreateQuestionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Create a Question</ModalHeader>

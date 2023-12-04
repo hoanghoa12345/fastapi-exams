@@ -5,7 +5,7 @@ import AnswerSheet from "@/components/answers/AnswerSheet";
 import QuestionPanel from "@/components/questions/QuestionPanel";
 import LeftSidebar from "@/components/left-sidebar/LeftSidebar";
 import { useFetch } from "@/hooks/useFetch";
-import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useParams, useSearchParams, Link } from "react-router-dom";
 import { Exam } from "@/types";
 import ErrorPage from "./ErrorPage";
 
@@ -24,6 +24,7 @@ function Home() {
       <HStack h="full">
         <VStack w={350} bg="gray.200" minH="full">
           <Box>{data?.name}</Box>
+          <Link to="/">Exit</Link>
         </VStack>
         <Box h="full" w="full" overflowY="auto">
           {isLoading ? (
