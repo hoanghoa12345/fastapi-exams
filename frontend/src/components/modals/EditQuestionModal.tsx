@@ -81,7 +81,7 @@ const EditQuestionModal = ({ isOpen, onClose, onSubmit, initData }: ModalProps) 
     <Modal isOpen={isOpen} onClose={onClose} size="2xl">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Create a Question</ModalHeader>
+        <ModalHeader>Edit a Question</ModalHeader>
         <ModalBody>
           <FormControl mb={4}>
             <FormLabel>Question Name</FormLabel>

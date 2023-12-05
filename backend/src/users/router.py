@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from src.users.service import *
+from src.users.service import create_user, get_user, get_users
 from src.users import models, schemas
-from src.database import SessionLocal, engine
+from src.database import SessionLocal
+from sqlalchemy.orm import Session
 
-user_router = APIRouter()
-
-models.Base.metadata.create_all(bind=engine)
+user_router = APIRouter(
+    prefix="/api/v1/users",
+    tags=["users"],  # tag group on swagger
+    responses={404: {"description": "Not found"}},
+)
 
 
 def get_db():
@@ -16,9 +19,15 @@ def get_db():
         db.close()
 
 
-@user_router.get("/users/", tags=["users"])
-async def read_users():
-    return [{"username": "Rick"}, {"username": "Morty"}]
+# Authentication
+@user_router.post("/register", tags=["users"])
+async def register_new_account(
+    db: Session = Depends(get_db), user: schemas.UserCreate = None
+):
+    """
+    Register new account
+    """
+    return create_user(db, user)
 
 
 @user_router.get("/users/me", tags=["users"])

@@ -2,10 +2,10 @@ import "./App.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "@/pages/Home";
-import CreateTest from "@/pages/CreateTest";
+import CreateTest from "@/pages/admin/CreateTest";
 import ListTest from "@/pages/ListTest";
 import ErrorPage from "@/pages/ErrorPage";
-import ViewTest from "@/pages/ViewTest";
+import ViewTest from "@/pages/admin/ViewTest";
 // import "@fontsource/poppins";
 import LoginPage from "./pages/auth/Login";
 import AdminLayout from "./layouts/AdminLayout";
@@ -38,6 +38,10 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     element: <AdminLayout />,
     children: [
+      {
+        index: true,
+        element: <p>Dashboard</p>,
+      },
       {
         path: "create-test",
         element: <CreateTest />,

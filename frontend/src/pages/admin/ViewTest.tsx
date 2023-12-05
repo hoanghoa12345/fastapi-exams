@@ -122,6 +122,7 @@ const ViewTest = () => {
     };
 
     const fetchExam = async (id: string) => {
+      // Set timeout to make lazy load tab index
       setTimeout(async () => {
         const { data } = await ExamApi.getExam(id);
         setCurrentExam(data);
