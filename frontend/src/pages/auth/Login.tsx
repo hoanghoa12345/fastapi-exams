@@ -1,8 +1,60 @@
 import React from "react";
-import { Box, Flex, Heading, Input, Button, Text, Link as ChakraLink } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Box, Flex, Heading, Input, Button, Text, Link as ChakraLink, FormControl, FormErrorMessage } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
+import { authApi } from "@/services/authApi";
 
 const LoginPage: React.FC = () => {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [success, setSuccess] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [isInvalid, setIsInvalid] = React.useState({
+    email: true,
+    password: true,
+  });
+
+  const navigate = useNavigate();
+
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      setIsLoading(true);
+      setError("");
+      setSuccess("");
+      const formData = new FormData();
+      formData.append("username", email);
+      formData.append("password", password);
+      const { data } = await authApi.login(formData);
+      if(data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        setSuccess("Login successful");
+        navigate("/");
+      }
+    } catch (error) {
+      setError("Invalid email or password");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+    setIsInvalid({
+      ...isInvalid,
+      email: event.target.value.trim() === "",
+    });
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+    setIsInvalid({
+      ...isInvalid,
+      password: event.target.value.trim() === "",
+    });
+  };
+
   return (
     <Box h="full">
       <Box h="full" display={{ base: "block", md: "flex" }} alignItems={{ base: "normal", md: "center" }}>
@@ -25,11 +77,51 @@ const LoginPage: React.FC = () => {
           <Text mb={4} fontSize="sm" color="gray.500">
             Please login to continue
           </Text>
-          <Input placeholder="Username" variant="outline" mb={4} type="text" />
-          <Input placeholder="Password" variant="outline" mb={4} type="password" />
-          <Button colorScheme="teal" width="full">
-            Sign In
-          </Button>
+          <form onSubmit={handleLogin}>
+            <FormControl isInvalid={isInvalid.email}>
+              <Input
+                placeholder="Email"
+                variant="outline"
+                mb={4}
+                type="email"
+                onChange={handleEmailChange}
+                value={email}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                autoFocus
+                required
+                minLength={5}
+                maxLength={50}
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                title="Please enter a valid email address"
+              />
+              <FormErrorMessage>Please enter a valid email address</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={isInvalid.password}>
+              <Input
+                placeholder="Password"
+                variant="outline"
+                mb={4}
+                type="password"
+                onChange={handlePasswordChange}
+                value={password}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                required
+                minLength={5}
+                maxLength={50}
+                title="Please enter a valid password"
+              />
+              <FormErrorMessage>Please enter a valid password</FormErrorMessage>
+            </FormControl>
+            <Button type="submit" colorScheme="teal" width="full" isLoading={isLoading}>
+              Sign In
+            </Button>
+          </form>
           <ChakraLink as={Link} mt={4} textAlign="end" color="teal.500" to="/forgot-password">
             Forgot Password?
           </ChakraLink>
