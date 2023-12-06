@@ -22,3 +22,20 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def get_user_by_credential(db: Session, form_data: schemas.UserLogin):
+    user = db.query(models.User).filter(models.User.email == form_data.email).first()
+    if not user:
+        return False
+    if not dependencies.verify_password(form_data.password, user.password):
+        return False
+    return user
+
+def get_active_user(db: Session, user_id: str):
+    user =db.query(models.User).filter(models.User.id == user_id, models.User.is_active == True).first()
+    if user:
+        user.password = "******"
+        return user
+    return None
+

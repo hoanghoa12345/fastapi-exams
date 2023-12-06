@@ -5,7 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from .users.router import user_router
 from .exams.router import exam_router
 
-app = FastAPI()
+app = FastAPI(
+    title='Exam API',
+    description='Exam API',
+    version='0.0.1',
+    contact={
+        'name': 'Exam API',
+        'url': 'http://localhost:3002',
+    }
+)
 
 app.add_middleware(
     CORSMiddleware,

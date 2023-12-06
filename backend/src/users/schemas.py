@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, validator, constr
+from datetime import date
 
 class UserBase(BaseModel):
     email: str
@@ -12,11 +13,28 @@ class UserCreate(UserBase):
     confirm_password: constr(min_length=8, max_length=64)
 
     # custom validator confirm password
-    @validator('confirm_password')
+    @validator("confirm_password")
     def passwords_match(cls, v, values, **kwargs):
-        if 'password' in values and v != values['password']:
-            raise ValueError('passwords do not match')
+        if "password" in values and v != values["password"]:
+            raise ValueError("passwords do not match")
         return v
+
+
+class UserLogin(UserBase):
+    email: EmailStr
+    password: constr(min_length=8, max_length=64)
+
+
+class UserItem(UserBase):
+    id: str
+    email: EmailStr
+    role: str
+    birth_date: str | None
+    first_name: str | None
+    last_name: str | None
+    is_active: bool
+    is_verified: bool | None
+    created_at: date | None
 
 
 class User(UserBase):
