@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import {
   Avatar,
@@ -13,6 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { UserMenu } from "@/components/menus/UserMenu";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "@/stores/useUserStore";
+import { authApi } from "@/services/authApi";
 type Exam = {
   id: string;
   name: string;
@@ -20,7 +22,20 @@ type Exam = {
 const ListTest = () => {
   const { data, isLoading, error } = useFetch<Exam[]>("/api/v1/exams");
   const navigate = useNavigate();
+  const userStore = useUserStore();
 
+  const fetchCurrentUser = () => {
+    const accessToken = localStorage.getItem('token');
+    if (accessToken) {
+      authApi.me(accessToken).then((res) => {
+        userStore.setUser(res.data);
+      });
+    }
+  }
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, [])
   return (
     <Box>
       <Box bg={"gray.100"}>

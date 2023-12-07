@@ -9,6 +9,7 @@ import ViewTest from "@/pages/admin/ViewTest";
 // import "@fontsource/poppins";
 import LoginPage from "./pages/auth/Login";
 import AdminLayout from "./layouts/AdminLayout";
+import ProfilePage from "./pages/Profile";
 
 const theme = extendTheme({
   fonts: {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/profile",
+    element: <ProfilePage />,
   },
   {
     path: "/admin",
