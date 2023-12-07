@@ -1,8 +1,21 @@
 import React from "react";
-import { Box, Flex, Heading, Input, Button, Text, Link as ChakraLink, FormControl, FormErrorMessage } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  Input,
+  Button,
+  Text,
+  Link as ChakraLink,
+  FormControl,
+  FormErrorMessage,
+  Alert,
+  AlertIcon,
+} from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "@/services/authApi";
 import { userRoles } from "@/utils/constants";
+import { AxiosError } from "axios";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = React.useState("");
@@ -12,8 +25,8 @@ const LoginPage: React.FC = () => {
   const [success, setSuccess] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [isInvalid, setIsInvalid] = React.useState({
-    email: true,
-    password: true,
+    email: false,
+    password: false,
   });
 
   const navigate = useNavigate();
@@ -28,17 +41,20 @@ const LoginPage: React.FC = () => {
       formData.append("username", email);
       formData.append("password", password);
       const { data } = await authApi.login(formData);
-      if(data.access_token) {
+      if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         setSuccess("Login successful");
-        if(data.role === userRoles.ADMIN) {
+        if (data.role === userRoles.ADMIN) {
           navigate("/admin");
-        }else {
+        } else {
           navigate("/");
         }
       }
     } catch (error) {
       setError("Invalid email or password");
+      if (error instanceof AxiosError) {
+        setError(error.response?.data.detail);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -82,12 +98,17 @@ const LoginPage: React.FC = () => {
           <Text mb={4} fontSize="sm" color="gray.500">
             Please login to continue
           </Text>
+          {error ? (
+            <Alert status="error" mb={2}>
+              <AlertIcon />
+              {Array.isArray(error) ? error.map((e) => <React.Fragment key={e.type}>{e.msg}</React.Fragment>) : error}
+            </Alert>
+          ) : null}
           <form onSubmit={handleLogin}>
-            <FormControl isInvalid={isInvalid.email}>
+            <FormControl isInvalid={isInvalid.email} mb={4}>
               <Input
                 placeholder="Email"
                 variant="outline"
-                mb={4}
                 type="email"
                 onChange={handleEmailChange}
                 value={email}
@@ -104,11 +125,10 @@ const LoginPage: React.FC = () => {
               />
               <FormErrorMessage>Please enter a valid email address</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={isInvalid.password}>
+            <FormControl isInvalid={isInvalid.password} mb={4}>
               <Input
                 placeholder="Password"
                 variant="outline"
-                mb={4}
                 type="password"
                 onChange={handlePasswordChange}
                 value={password}

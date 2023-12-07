@@ -78,7 +78,7 @@ async def login_account(
         )
         user = get_user_by_credential(db, user_request)
         if not user:
-            raise HTTPException(status_code=404, detail="Email or password not correct")
+            raise HTTPException(status_code=401, detail="Email or password not correct")
         access_token = create_access_token(data={"sub": user.id})
         return {
             "access_token": access_token,
