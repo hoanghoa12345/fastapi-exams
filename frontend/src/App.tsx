@@ -10,6 +10,7 @@ import ViewTest from "@/pages/admin/ViewTest";
 import LoginPage from "./pages/auth/Login";
 import AdminLayout from "./layouts/AdminLayout";
 import ProfilePage from "./pages/Profile";
+import RegisterPage from "./pages/auth/Register";
 
 const theme = extendTheme({
   fonts: {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
     path: "/profile",
