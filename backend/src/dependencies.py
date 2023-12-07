@@ -13,16 +13,27 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+
+# Demo get token header
 async def get_token_header(x_token: Annotated[str, Header()]):
     if x_token != "fake-super-secret-token":
         raise HTTPException(status_code=400, detail="X-Token header invalid")
 
 
+# Demo get token query
 async def get_query_token(token: str):
     if token != "jessica":
         raise HTTPException(status_code=400, detail="No Jessica token provided")
 
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Create access token
+    :param data:
+    :param expires_delta:
+    :return:
+
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -32,7 +43,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def verify_token(token: str):
+    """
+    Verify token
+    :param token:
+    :return:
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id: str = payload.get("sub")
