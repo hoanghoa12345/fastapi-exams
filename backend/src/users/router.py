@@ -84,6 +84,7 @@ async def login_account(
             "access_token": access_token,
             "token_type": "bearer",
             "user": user.email,
+            "role": user.role,
         }
     except ValidationError as e:
         raise HTTPException(422, e.errors())

@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Flex, Heading, Input, Button, Text, Link as ChakraLink, FormControl, FormErrorMessage } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "@/services/authApi";
+import { userRoles } from "@/utils/constants";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = React.useState("");
@@ -30,7 +31,11 @@ const LoginPage: React.FC = () => {
       if(data.access_token) {
         localStorage.setItem("token", data.access_token);
         setSuccess("Login successful");
-        navigate("/");
+        if(data.user.role === userRoles.ADMIN) {
+          navigate("/admin");
+        }else {
+          navigate("/");
+        }
       }
     } catch (error) {
       setError("Invalid email or password");

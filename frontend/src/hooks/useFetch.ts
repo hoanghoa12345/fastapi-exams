@@ -1,6 +1,7 @@
+import { API_URL } from "@/utils/constants";
 import { useEffect, useState } from "react";
 
-const baseUrl = "http://localhost:3002";
+const baseUrl = API_URL;
 
 
 export function useFetch<T=unknown>(url: string, method: string = "GET") {
