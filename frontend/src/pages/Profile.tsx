@@ -10,12 +10,12 @@ import {
   Tabs,
   VStack,
   Card,
-  Image,
   CardBody,
   CardFooter,
   Text,
   Stack,
   Button,
+  IconButton,
   Avatar,
   Flex,
   CardHeader,
@@ -36,11 +36,11 @@ const ProfilePage = () => {
 
         <Box bg={"white"} borderRadius={16} p={4}>
           <Tabs orientation="vertical" variant="soft-rounded" colorScheme="blue">
-            <TabList w={"8rem"}>
+            <TabList w={250}>
               <Tab>My Profile</Tab>
               <Tab>Security</Tab>
             </TabList>
-            <TabPanels>
+            <TabPanels minH={450}>
               <TabPanel>
                 <Box>
                   <Heading mx={4} as="h3" size={"md"}>
@@ -73,25 +73,33 @@ const ProfilePage = () => {
                             Personal Information
                           </Heading>
                         </CardHeader>
-                          <CardFooter>Edit</CardFooter>
+                        <CardFooter>Edit</CardFooter>
                       </Flex>
                       <CardBody>
                         <Grid templateColumns="repeat(2, 1fr)" gap={6}>
                           <GridItem w="100%">
-                            <Text fontWeight={'semibold'} textColor={'gray.500'}>First Name</Text>
+                            <Text fontWeight={"semibold"} textColor={"gray.500"}>
+                              First Name
+                            </Text>
                             <Text>{user?.first_name}</Text>
                           </GridItem>
                           <GridItem w="100%">
-                            <Text fontWeight={'semibold'} textColor={'gray.500'}>Last Name</Text>
+                            <Text fontWeight={"semibold"} textColor={"gray.500"}>
+                              Last Name
+                            </Text>
                             <Text>{user?.last_name}</Text>
                           </GridItem>
                           <GridItem w="100%">
-                            <Text fontWeight={'semibold'} textColor={'gray.500'}>Email</Text>
+                            <Text fontWeight={"semibold"} textColor={"gray.500"}>
+                              Email
+                            </Text>
                             <Text>{user?.email}</Text>
                           </GridItem>
                           <GridItem w="100%">
-                            <Text fontWeight={'semibold'} textColor={'gray.500'}>Phone</Text>
-                            <Text>{user?.phone ?? '-'}</Text>
+                            <Text fontWeight={"semibold"} textColor={"gray.500"}>
+                              Phone
+                            </Text>
+                            <Text>{user?.phone ?? "-"}</Text>
                           </GridItem>
                         </Grid>
                       </CardBody>
@@ -100,9 +108,9 @@ const ProfilePage = () => {
                 </Box>
               </TabPanel>
               <TabPanel>
-                <VStack>
-                  <Heading>Password</Heading>
-                </VStack>
+                <Heading mx={4} as="h3" size={"md"}>
+                  Change password
+                </Heading>
               </TabPanel>
             </TabPanels>
           </Tabs>

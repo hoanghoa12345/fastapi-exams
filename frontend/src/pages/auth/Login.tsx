@@ -31,7 +31,7 @@ const LoginPage: React.FC = () => {
       if(data.access_token) {
         localStorage.setItem("token", data.access_token);
         setSuccess("Login successful");
-        if(data.user.role === userRoles.ADMIN) {
+        if(data.role === userRoles.ADMIN) {
           navigate("/admin");
         }else {
           navigate("/");

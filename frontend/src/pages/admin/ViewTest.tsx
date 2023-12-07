@@ -1,5 +1,5 @@
 import React, { useEffect, useState, lazy } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import {
   Box,
   Breadcrumb,
@@ -88,8 +88,11 @@ const ViewTest = () => {
     }
   };
 
+  const reloadQuestionsData = async () => {
+   // TODO: Handle reload question data
+  };
+
   const handleCreateQuestion = async (data: any) => {
-    console.log("Form submitted:", data);
     if (!part) {
       toast({
         title: "Part is required",
@@ -112,6 +115,7 @@ const ViewTest = () => {
         duration: 3000,
         isClosable: true,
       });
+      reloadQuestionsData();
     }
   };
 
@@ -145,15 +149,15 @@ const ViewTest = () => {
     <Box h="full" w="full" p={4}>
       <Breadcrumb>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          <BreadcrumbLink href="/admin">Home</BreadcrumbLink>
         </BreadcrumbItem>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/create-test/">Create test</BreadcrumbLink>
+          <BreadcrumbLink href="/admin/create-test/">Create test</BreadcrumbLink>
         </BreadcrumbItem>
 
         <BreadcrumbItem isCurrentPage>
-          <BreadcrumbLink href={`/create-test/${id}`}>{currentExam?.name}</BreadcrumbLink>
+          <BreadcrumbLink href={`/admin/create-test/${id}`}>{currentExam?.name}</BreadcrumbLink>
         </BreadcrumbItem>
       </Breadcrumb>
       <Stack spacing={4} direction="row" justifyContent="end">
