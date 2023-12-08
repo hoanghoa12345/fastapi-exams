@@ -45,6 +45,22 @@ class UserUpdate(BaseModel):
     phone: str | None
     address: str | None
 
+class UserResponse(UserBase):
+    id: str
+    email: EmailStr
+    role: str
+    birth_date: date | None
+    first_name: str | None
+    last_name: str | None
+    phone: str | None
+    address: str | None
+    is_active: bool
+    is_verified: bool
+    created_at: date
+
+    class Config:
+        orm_mode = True
+
 
 class User(UserBase):
     id: str

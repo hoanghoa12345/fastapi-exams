@@ -35,8 +35,7 @@ def get_user_by_credential(db: Session, form_data: schemas.UserLogin):
 def get_active_user(db: Session, user_id: str):
     user =db.query(models.User).filter(models.User.id == user_id, models.User.is_active == True).first()
     if user:
-        user.password = "******"
-        return user
+        return schemas.UserResponse.from_orm(user)
     return None
 
 def update_user(db: Session, user_id: str, user: schemas.UserUpdate):
