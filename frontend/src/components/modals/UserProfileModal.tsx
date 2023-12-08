@@ -24,7 +24,6 @@ interface UserProfileModalProps {
 
 const UserProfileModal = ({ isOpen, onClose, initUser, onUpdate }: UserProfileModalProps) => {
   const [user, setUser] = React.useState({
-    ...initUser,
     birth_date: initUser?.birth_date || undefined,
     phone: initUser?.phone || "",
     address: initUser?.address || "",
@@ -36,19 +35,6 @@ const UserProfileModal = ({ isOpen, onClose, initUser, onUpdate }: UserProfileMo
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, [event.target.name]: event.target.value });
   };
-
-  React.useEffect(() => {
-    setUser({
-      ...initUser,
-      birth_date: initUser?.birth_date || undefined,
-      phone: initUser?.phone || "",
-      address: initUser?.address || "",
-      email: initUser?.email || "",
-      first_name: initUser?.first_name || "",
-      last_name: initUser?.last_name || "",
-      id: initUser?.id || "",
-    });
-  }, []);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={"2xl"}>

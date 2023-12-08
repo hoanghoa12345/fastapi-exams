@@ -1,13 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import ValidationError
-from src.users.service import (
-    create_user,
-    get_user,
-    get_users,
-    get_user_by_credential,
-    get_active_user,
-    update_user,
-)
+from src.users import service
 from src.users import models, schemas
 from src.database import SessionLocal
 from sqlalchemy.orm import Session
@@ -46,7 +39,7 @@ async def get_current_user(
         user_id = verify_token(token)
         if not user_id:
             raise credentials_exception
-        user = get_active_user(db, user_id)
+        user = service.get_active_user(db, user_id)
         if not user:
             raise credentials_exception
         return user
@@ -62,7 +55,7 @@ async def register_new_account(
     """
     Register new account
     """
-    return create_user(db, user)
+    return service.create_user(db, user)
 
 
 @user_router.post("/login", tags=["users"])
@@ -77,7 +70,7 @@ async def login_account(
         user_request = schemas.UserLogin(
             email=form_data.username, password=form_data.password
         )
-        user = get_user_by_credential(db, user_request)
+        user = service.get_user_by_credential(db, user_request)
         if not user:
             raise HTTPException(status_code=401, detail="Email or password not correct")
         access_token = create_access_token(data={"sub": user.id})
@@ -102,7 +95,7 @@ async def read_users_me(
     user_id = verify_token(token)
     if not user_id:
         raise HTTPException(status_code=401, detail="Unauthenticated")
-    user = get_active_user(db, user_id)
+    user = service.get_active_user(db, user_id)
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     return user
@@ -118,7 +111,7 @@ async def get_all_user(
     """
     if current_user.role != "admin":
         raise HTTPException(status_code=401, detail="Unauthorized")
-    users = get_users(db, 0, 100)
+    users = service.get_users(db, 0, 100)
     user_items: list[schemas.UserItem] = list()
     for user in users:
         item = schemas.UserItem(
@@ -146,4 +139,42 @@ async def put_update_user(
     """
     Update user
     """
-    return update_user(db, user_id=current_user.id, user=user)
+    return service.update_user(db, user_id=current_user.id, user=user)
+
+
+@user_router.patch("/change-password", tags=["users"])
+async def change_password(
+    db: Session = Depends(get_db),
+    current_user: Annotated[schemas.User, Depends(get_current_user)] = None,
+    password: str = None,
+    new_password: str = None,
+    confirm_password: str = None,
+):
+    """
+    Change password
+    """
+    return service.change_password(
+        db,
+        user_id=current_user.id,
+        password=password,
+        new_password=new_password,
+        confirm_password=confirm_password,
+    )
+
+
+@user_router.patch("/reset-password", tags=["users"])
+async def reset_password(
+    db: Session = Depends(get_db),
+    user_id: str = None,
+    new_password: str = None,
+    confirm_password: str = None,
+):
+    """
+    Reset user's password
+    """
+    return service.reset_password(
+        db,
+        user_id,
+        new_password=new_password,
+        confirm_password=confirm_password,
+    )

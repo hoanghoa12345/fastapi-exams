@@ -52,3 +52,28 @@ def update_user(db: Session, user_id: str, user: schemas.UserUpdate):
         return db_user
     return None
 
+
+def change_password(db: Session, user_id: str, password:str, new_password:str, confirm_password:str):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        if not dependencies.verify_password(password, db_user.password):
+            return None
+        if new_password != confirm_password:
+            return None
+        db_user.password = dependencies.get_password_hash(new_password)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    return None
+
+
+def reset_password(db: Session, user_id: str, new_password:str, confirm_password:str):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        if new_password != confirm_password:
+            return None
+        db_user.password = dependencies.get_password_hash(new_password)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    return None
