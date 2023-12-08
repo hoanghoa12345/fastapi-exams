@@ -1,16 +1,6 @@
 import React from "react";
-import {
-  Box,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Button,
-} from "@chakra-ui/react";
-import { ViewIcon} from "@chakra-ui/icons";
+import { Box, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button } from "@chakra-ui/react";
+import { ViewIcon } from "@chakra-ui/icons";
 
 export type TableColumn<T> = {
   title: string;
@@ -27,14 +17,7 @@ type BaseTableProps<T> = {
 
 const BaseTable = <T extends Record<string, any>>({ columns, dataSource, viewAction, editAction }: BaseTableProps<T>) => {
   return (
-    <Box
-      p={3}
-      border={1}
-      borderStyle={"solid"}
-      borderRadius={"lg"}
-      borderColor={"gray.100"}
-      marginTop={5}
-    >
+    <Box p={3} border={1} borderStyle={"solid"} borderRadius={"lg"} borderColor={"gray.100"} marginTop={5}>
       <TableContainer>
         <Table variant="simple">
           <Thead>
@@ -52,9 +35,11 @@ const BaseTable = <T extends Record<string, any>>({ columns, dataSource, viewAct
                   <Td key={column.key}>{item[column.dataIndex]}</Td>
                 ))}
                 <Td textAlign={"right"}>
-                  <Button variant={'ghost'} onClick={() => viewAction(item.id)}><ViewIcon/></Button>
-                  <Button variant={'ghost'} onClick={() => editAction(item.id)}>
-                    <img src="/images/icons/pencil-icon.svg" alt="edit icon" width={16} height={16}/>
+                  <Button variant={"ghost"} onClick={() => viewAction(item.id)}>
+                    <i className="bx bx-show bx-sm" />
+                  </Button>
+                  <Button variant={"ghost"} onClick={() => editAction(item.id)}>
+                    <i className="bx bx-edit bx-sm" />
                   </Button>
                 </Td>
               </Tr>

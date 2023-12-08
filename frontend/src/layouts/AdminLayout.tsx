@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   HStack,
   VStack,
@@ -18,11 +18,19 @@ import {
   useDisclosure,
   AlertIcon,
   Alert,
+  Menu,
+  MenuList,
+  MenuGroup,
+  MenuItem,
+  Link,
+  MenuButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import { useUserStore } from "@/stores/useUserStore";
 import { authApi } from "@/services/authApi";
 import { UserMenu } from "@/components/menus/UserMenu";
-import { CirclePlusIcon, HomeIcon } from "@/components/icons";
 import { userRoles } from "@/utils/constants";
 const CONTAINER_WIDTH = "container.xl";
 const HORIZONTAL_LAYOUT = 1;
@@ -31,7 +39,6 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const userStore = useUserStore();
   const user = userStore.user;
-  const [isLoadedUser, setIsLoadedUser] = useState(false);
   const [errors, setErrors] = useState(null);
   const [layout, setLayout] = useState<number>(HORIZONTAL_LAYOUT);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,82 +51,94 @@ const AdminLayout = () => {
   const menuItems = [
     {
       name: "Dashboard",
-      path: "/admin/create-test",
-      icon: <HomeIcon width={24} height={24} />,
+      path: "/admin/",
+      icon: <i className="bx bx-home" />,
     },
     {
       name: "Create Test",
       path: "/admin/create-test",
-      icon: <CirclePlusIcon width={24} height={24} />,
+      icon: <i className="bx bx-folder-plus" />,
     },
   ];
   const fetchCurrentUser = () => {
     const accessToken = localStorage.getItem("token");
     if (accessToken) {
-      authApi.me(accessToken).then((res) => {
-        userStore.setUser(res.data);
-        setIsLoadedUser(true);
-      }).catch((error) => {
-        setErrors(error);
-      });
+      authApi
+        .me(accessToken)
+        .then((res) => {
+          userStore.setUser(res.data);
+        })
+        .catch((error) => {
+          // navigate("/login");
+          setErrors(error);
+        });
     } else {
-      setIsLoadedUser(true);
+      navigate("/login");
     }
   };
 
   useEffect(() => {
     fetchCurrentUser();
   }, []);
-
-  if (isLoadedUser && !user) return <Navigate to="/login" replace />;
-  if (isLoadedUser && user?.role !== userRoles.ADMIN) return <Navigate to="/error" replace />;
   return (
     <Box h="full">
-      {errors ? <Alert status="warning">
-        <AlertIcon />
-        Seems your account session is expire, re-login now
-      </Alert> : null}
       {layout === HORIZONTAL_LAYOUT ? (
-        <HStack h="full">
-          <VStack w={300} minH="full" spacing={2}>
-            <Box py={8}>
-              <Stack justifyContent="center" alignItems="center">
-                <Avatar size="md" name={user?.first_name} />
-                <Text>{user?.email}</Text>
-              </Stack>
-            </Box>
-            <Divider />
-            <VStack py={4} flex={1}>
-              {menuItems.map((item, index) => (
-                <Box
-                  key={index}
-                  px={2}
-                  py={2}
-                  cursor="pointer"
-                  display="flex"
-                  gap={2}
-                  _hover={{ backgroundColor: "gray.200" }}
-                  w="full"
-                  rounded="md"
-                  role="button"
-                  onClick={() => navigate(item.path)}>
-                  {item.icon}
-                  <Text>{item.name}</Text>
-                </Box>
-              ))}
+        <Flex h="full">
+          {/* Sidebar menu */}
+          {/* Header logo */}
+          <Box as="nav" pos="fixed" left="0" top="0" h="100%" p="4" w="250px" borderRight="1px" borderRightColor="gray.200">
+            <VStack spacing="4" align="flex-start">
+              <Text fontSize="xl" fontWeight="bold">
+                Admin Panel
+              </Text>
+              <VStack my={2} spacing={4}>
+                {menuItems.map((item) => (
+                  <Link as={RouterLink} to={item.path} key={item.path}>
+                    {item.icon} {item.name}
+                  </Link>
+                ))}
+              </VStack>
             </VStack>
-            <Divider />
-            <VStack py={4}>
-              <Button variant="outline" w="full" onClick={onOpen}>
-                Logout
-              </Button>
-            </VStack>
-          </VStack>
-          <Divider orientation="vertical" />
-          <Box h="full" w="full" overflowY="auto">
-            <Outlet />
           </Box>
-        </HStack>
+          {/* Content Layout */}
+          <Box ml="250px" w="full" overflowY="auto">
+            {errors ? (
+              <Alert status="warning">
+                <AlertIcon />
+                Seems your account session is expire, <RouterLink to="/login">re-login</RouterLink> now
+              </Alert>
+            ) : null}
+            <HStack spacing="4" p={2} borderBottom={"1px"} borderColor={"gray.200"}>
+              <InputGroup w={480}>
+                <InputLeftElement pointerEvents="none">
+                  <i className="bx bx-search" />
+                </InputLeftElement>
+                <Input placeholder="Search..." />
+              </InputGroup>
+
+              <Spacer />
+              <Menu>
+                <MenuButton>
+                  <Avatar size="sm" name={user?.first_name} />
+                </MenuButton>
+                <MenuList>
+                  <MenuItem as={RouterLink} to="/profile">
+                    Profile
+                  </MenuItem>
+                  <MenuItem as={RouterLink} to="/admin/settings">
+                    Settings
+                  </MenuItem>
+                  <MenuItem as="button" onClick={onOpen}>
+                    Logout
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </HStack>
+            <Box>
+              <Outlet />
+            </Box>
+          </Box>
+        </Flex>
       ) : (
         <>
           <Container maxW={CONTAINER_WIDTH}>
