@@ -6,6 +6,7 @@ from src.users.service import (
     get_users,
     get_user_by_credential,
     get_active_user,
+    update_user,
 )
 from src.users import models, schemas
 from src.database import SessionLocal
@@ -134,3 +135,15 @@ async def get_all_user(
         user_items.append(item)
 
     return user_items
+
+
+@user_router.put("/update", tags=["users"])
+async def put_update_user(
+    db: Session = Depends(get_db),
+    current_user: Annotated[schemas.User, Depends(get_current_user)] = None,
+    user: schemas.UserUpdate = None,
+):
+    """
+    Update user
+    """
+    return update_user(db, user_id=current_user.id, user=user)

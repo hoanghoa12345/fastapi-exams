@@ -37,6 +37,15 @@ class UserItem(UserBase):
     created_at: date | None
 
 
+class UserUpdate(BaseModel):
+    id: str
+    first_name: str | None
+    last_name: str | None
+    birth_date: date | None
+    phone: str | None
+    address: str | None
+
+
 class User(UserBase):
     id: str
     email: EmailStr

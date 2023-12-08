@@ -6,7 +6,6 @@ import CreateTest from "@/pages/admin/CreateTest";
 import ListTest from "@/pages/ListTest";
 import ErrorPage from "@/pages/ErrorPage";
 import ViewTest from "@/pages/admin/ViewTest";
-// import "@fontsource/poppins";
 import LoginPage from "./pages/auth/Login";
 import AdminLayout from "./layouts/AdminLayout";
 import ProfilePage from "./pages/Profile";
@@ -14,8 +13,8 @@ import RegisterPage from "./pages/auth/Register";
 
 const theme = extendTheme({
   fonts: {
-    heading: `'Arial', sans-serif`,
-    body: `'Open Sans', sans-serif`,
+    heading: `'Open Sans', sans-serif`,
+    body: `'Arial', sans-serif`,
     mono: "Consolas, monospace",
   },
 });

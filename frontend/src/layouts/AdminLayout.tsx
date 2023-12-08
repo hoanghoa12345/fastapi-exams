@@ -27,11 +27,13 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  useToast,
 } from "@chakra-ui/react";
 import { useUserStore } from "@/stores/useUserStore";
 import { authApi } from "@/services/authApi";
 import { UserMenu } from "@/components/menus/UserMenu";
 import { userRoles } from "@/utils/constants";
+import UserProfileModal from "@/components/modals/UserProfileModal";
 const CONTAINER_WIDTH = "container.xl";
 const HORIZONTAL_LAYOUT = 1;
 const VERTICAL_LAYOUT = 2;
@@ -41,7 +43,9 @@ const AdminLayout = () => {
   const user = userStore.user;
   const [errors, setErrors] = useState(null);
   const [layout, setLayout] = useState<number>(HORIZONTAL_LAYOUT);
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOpenProfile, onOpen: onOpenProfile, onClose: onCloseProfile } = useDisclosure();
   const handleLogout = () => {
     userStore.removeUser();
     localStorage.removeItem("token");
@@ -77,6 +81,23 @@ const AdminLayout = () => {
     }
   };
 
+  const handleUpdateUser = async (form: any) => {
+    const accessToken = localStorage.getItem("token");
+    if (accessToken) {
+      const { data } = await authApi.update(accessToken, form);
+      userStore.setUser(data);
+      toast({
+        title: "Success",
+        description: "Your profile updated successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-right",
+      });
+      onCloseProfile();
+    }
+  };
+
   useEffect(() => {
     fetchCurrentUser();
   }, []);
@@ -88,9 +109,9 @@ const AdminLayout = () => {
           {/* Header logo */}
           <Box as="nav" pos="fixed" left="0" top="0" h="100%" p="4" w="250px" borderRight="1px" borderRightColor="gray.200">
             <VStack spacing="4" align="flex-start">
-              <Text fontSize="xl" fontWeight="bold">
+              <Heading as="h2" size={"md"}>
                 Admin Panel
-              </Text>
+              </Heading>
               <VStack my={2} spacing={4}>
                 {menuItems.map((item) => (
                   <Link as={RouterLink} to={item.path} key={item.path}>
@@ -122,7 +143,7 @@ const AdminLayout = () => {
                   <Avatar size="sm" name={user?.first_name} />
                 </MenuButton>
                 <MenuList>
-                  <MenuItem as={RouterLink} to="/profile">
+                  <MenuItem as="button" onClick={onOpenProfile}>
                     Profile
                   </MenuItem>
                   <MenuItem as={RouterLink} to="/admin/settings">
@@ -171,6 +192,7 @@ const AdminLayout = () => {
         </>
       )}
       <UserMenu.ModalConfirm isOpen={isOpen} onClose={onClose} onConfirm={handleLogout} />
+      <UserProfileModal isOpen={isOpenProfile} onClose={onCloseProfile} initUser={userStore.user} onUpdate={handleUpdateUser} />
     </Box>
   );
 };

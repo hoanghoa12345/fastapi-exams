@@ -39,3 +39,16 @@ def get_active_user(db: Session, user_id: str):
         return user
     return None
 
+def update_user(db: Session, user_id: str, user: schemas.UserUpdate):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        db_user.first_name = user.first_name
+        db_user.last_name = user.last_name
+        db_user.birth_date = user.birth_date
+        db_user.phone = user.phone
+        db_user.address = user.address
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    return None
+

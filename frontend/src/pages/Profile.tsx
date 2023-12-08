@@ -97,7 +97,7 @@ const ProfilePage = () => {
           <Button colorScheme="blue" onClick={handleEditClick}>
             Edit
           </Button>
-          <Modal isOpen={isEditing} onClose={handleCloseModal} size={'lg'}>
+          <Modal isOpen={isEditing} onClose={handleCloseModal} size={'2xl'}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>Edit User Information</ModalHeader>
