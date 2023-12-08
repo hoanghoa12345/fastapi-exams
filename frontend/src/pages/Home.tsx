@@ -24,7 +24,7 @@ function Home() {
       <HStack h="full">
         <VStack w={350} bg="gray.200" minH="full">
           <Box>{data?.name}</Box>
-          <Link to="/">Exit</Link>
+          <Link to="/"><i className='bx bx-exit'/> Exit</Link>
         </VStack>
         <Box h="full" w="full" overflowY="auto">
           {isLoading ? (

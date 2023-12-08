@@ -15,7 +15,7 @@ import RegisterPage from "./pages/auth/Register";
 const theme = extendTheme({
   fonts: {
     heading: `'Arial', sans-serif`,
-    body: `'Arial', sans-serif`,
+    body: `'Open Sans', sans-serif`,
     mono: "Consolas, monospace",
   },
 });
