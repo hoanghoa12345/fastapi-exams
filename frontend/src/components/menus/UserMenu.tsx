@@ -22,6 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "@/stores/useUserStore";
+import { userRoles } from "@/utils/constants";
 
 export const UserMenu = () => {
   const navigate = useNavigate();
@@ -57,6 +58,11 @@ export const UserMenu = () => {
             </Flex>
           </MenuItem>
           <MenuDivider />
+          {userStore.user?.role === userRoles.ADMIN ? (
+            <MenuItem as={Link} to="/admin">
+              Admin
+            </MenuItem>
+          ) : null}
           <MenuItem as={Link} to="/profile">
             Profile
           </MenuItem>

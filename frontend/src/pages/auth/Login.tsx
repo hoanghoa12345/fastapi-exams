@@ -82,7 +82,7 @@ const LoginPage: React.FC = () => {
         <Box width={{ base: "full", md: "60%" }} bg="gray.200" minHeight={{ md: "full" }}>
           <Box my={2} px={4} w="full">
             <Heading size="md" color="teal.500">
-              English Test
+              EStudy
             </Heading>
           </Box>
           <img src="/images/login/working-from-home.svg" alt="login" />
@@ -92,7 +92,7 @@ const LoginPage: React.FC = () => {
           <Heading mb={4} size="md">
             Welcome to{" "}
             <Text as="span" color="teal.500">
-              English Test
+              EStudy
             </Text>
           </Heading>
           <Text mb={4} fontSize="sm" color="gray.500">

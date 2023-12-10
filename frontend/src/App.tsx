@@ -10,6 +10,8 @@ import LoginPage from "./pages/auth/Login";
 import AdminLayout from "./layouts/AdminLayout";
 import ProfilePage from "./pages/Profile";
 import RegisterPage from "./pages/auth/Register";
+import MainLayout from "./layouts/MainLayout";
+import MainTest from "./pages/MainTest";
 
 const theme = extendTheme({
   fonts: {
@@ -22,14 +24,32 @@ const theme = extendTheme({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <ListTest />,
-    errorElement: <ErrorPage />,
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <ListTest />,
+      },
+      {
+        path: "tests/:testId",
+        element: <MainTest />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
+      }
+    ],
   },
-  {
-    path: "/tests/:testId",
-    element: <Home />,
-    errorElement: <ErrorPage />,
-  },
+  // {
+  //   path: "/",
+  //   element: <ListTest />,
+  //   errorElement: <ErrorPage />,
+  // },
+  // {
+  //   path: "/tests/:testId",
+  //   element: <Home />,
+  //   errorElement: <ErrorPage />,
+  // },
   {
     path: "/login",
     element: <LoginPage />,
@@ -38,10 +58,10 @@ const router = createBrowserRouter([
     path: "/register",
     element: <RegisterPage />,
   },
-  {
-    path: "/profile",
-    element: <ProfilePage />,
-  },
+  // {
+  //   path: "/profile",
+  //   element: <ProfilePage />,
+  // },
   {
     path: "/admin",
     errorElement: <ErrorPage />,

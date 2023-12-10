@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate, Link as RouterLink } from "react-router-dom";
+import { Outlet, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   HStack,
   VStack,
@@ -7,12 +7,7 @@ import {
   Flex,
   Spacer,
   Text,
-  Button,
-  Stack,
-  Divider,
   Heading,
-  IconButton,
-  Icon,
   Avatar,
   Container,
   useDisclosure,
@@ -20,7 +15,6 @@ import {
   Alert,
   Menu,
   MenuList,
-  MenuGroup,
   MenuItem,
   Link,
   MenuButton,
@@ -126,7 +120,7 @@ const AdminLayout = () => {
             {errors ? (
               <Alert status="warning">
                 <AlertIcon />
-                Seems your account session is expire, <RouterLink to="/login">re-login</RouterLink> now
+                Seems your account session is expire, {' '} <RouterLink to="/login">re-login</RouterLink> {' '} now
               </Alert>
             ) : null}
             <HStack spacing="4" p={2} borderBottom={"1px"} borderColor={"gray.200"}>

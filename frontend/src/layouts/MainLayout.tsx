@@ -1,9 +1,35 @@
-import React from 'react'
+import React from "react";
+import { UserMenu } from "@/components/menus/UserMenu";
+import { Box, Flex } from "@chakra-ui/react";
+import { Link, Outlet } from "react-router-dom";
+import styled from "@emotion/styled";
 
 const MainLayout = () => {
-  return (
-    <div>MainLayout</div>
-  )
-}
+  const Logo = styled.div`
+    font-family: "Lato", sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;
+  `;
 
-export default MainLayout
+  return (
+    <Flex direction={"column"} h="100vh">
+      <Box bg={"gray.100"} boxShadow={'md'}>
+        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+          <Box px={4}>
+            <Link to="/">
+              <Logo>EStudy</Logo>
+            </Link>
+          </Box>
+          <Box px={4}>
+            <UserMenu />
+          </Box>
+        </Flex>
+      </Box>
+      <Box flex={1}>
+        <Outlet />
+      </Box>
+    </Flex>
+  );
+};
+
+export default MainLayout;
