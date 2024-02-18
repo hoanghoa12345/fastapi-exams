@@ -35,12 +35,12 @@ export const UserMenu = () => {
     onClose();
     navigate("/login");
   };
-  if (!username) return <Link to="/login">Login</Link>;
+  if (!username) return <Button as={Link} variant="ghost" to="/login">Login</Button>;
   return (
     <>
       <Menu>
         <MenuButton>
-          <Avatar name={username} size="md" />
+          <Avatar name={username} size="sm" />
         </MenuButton>
         <MenuList>
           <MenuItem>

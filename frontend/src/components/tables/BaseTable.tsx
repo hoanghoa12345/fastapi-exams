@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
+import { ViewIcon, EditIcon } from "@chakra-ui/icons";
 
 export type TableColumn<T> = {
   title: string;
@@ -36,10 +36,10 @@ const BaseTable = <T extends Record<string, any>>({ columns, dataSource, viewAct
                 ))}
                 <Td textAlign={"right"}>
                   <Button variant={"ghost"} onClick={() => viewAction(item.id)}>
-                    <i className="bx bx-show bx-sm" />
+                    <ViewIcon />
                   </Button>
                   <Button variant={"ghost"} onClick={() => editAction(item.id)}>
-                    <i className="bx bx-edit bx-sm" />
+                    <EditIcon />
                   </Button>
                 </Td>
               </Tr>

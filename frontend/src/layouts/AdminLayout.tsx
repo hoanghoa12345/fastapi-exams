@@ -1,42 +1,50 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
-  HStack,
-  VStack,
-  Box,
-  Flex,
-  Spacer,
-  Text,
-  Heading,
   Avatar,
-  Container,
-  useDisclosure,
-  AlertIcon,
-  Alert,
-  Menu,
-  MenuList,
-  MenuItem,
-  Link,
-  MenuButton,
+  AvatarProps,
+  Box,
+  BoxProps,
+  Collapse,
+  Drawer,
+  DrawerContent,
+  DrawerOverlay,
+  Flex,
+  FlexProps,
+  Icon,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+  useColorModeValue,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { FaBell, FaClipboardCheck, FaRss } from "react-icons/fa";
+import { AiFillGift } from "react-icons/ai";
+import { BsGearFill } from "react-icons/bs";
+import { FiMenu, FiSearch } from "react-icons/fi";
+import { HiCode, HiCollection } from "react-icons/hi";
+import { MdHome, MdKeyboardArrowRight } from "react-icons/md";
+import React, { useState, useEffect } from "react";
+import { site } from "@/utils/constants";
+import { Outlet, useNavigate, Link as RouterLink } from "react-router-dom";
 import { useUserStore } from "@/stores/useUserStore";
 import { authApi } from "@/services/authApi";
-import { UserMenu } from "@/components/menus/UserMenu";
 import { userRoles } from "@/utils/constants";
 import UserProfileModal from "@/components/modals/UserProfileModal";
-const CONTAINER_WIDTH = "container.xl";
-const HORIZONTAL_LAYOUT = 1;
-const VERTICAL_LAYOUT = 2;
+import { UserMenu } from "@/components/menus/UserMenu";
+
+
 const AdminLayout = () => {
+  const sidebar = useDisclosure();
   const navigate = useNavigate();
   const userStore = useUserStore();
   const user = userStore.user;
   const [errors, setErrors] = useState(null);
-  const [layout, setLayout] = useState<number>(HORIZONTAL_LAYOUT);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenProfile, onOpen: onOpenProfile, onClose: onCloseProfile } = useDisclosure();
@@ -46,16 +54,16 @@ const AdminLayout = () => {
     onClose();
     navigate("/login");
   };
-  const menuItems = [
+  const navbarItems = [
     {
       name: "Dashboard",
       path: "/admin/",
-      icon: <i className="bx bx-home" />,
+      icon: MdHome,
     },
     {
       name: "Create Test",
       path: "/admin/create-test",
-      icon: <i className="bx bx-folder-plus" />,
+      icon: FaRss,
     },
   ];
   const fetchCurrentUser = () => {
@@ -95,96 +103,188 @@ const AdminLayout = () => {
   useEffect(() => {
     fetchCurrentUser();
   }, []);
-  return (
-    <Box h="full">
-      {layout === HORIZONTAL_LAYOUT ? (
-        <Flex h="full">
-          {/* Sidebar menu */}
-          {/* Header logo */}
-          <Box as="nav" pos="fixed" left="0" top="0" h="100%" p="4" w="250px" borderRight="1px" borderRightColor="gray.200">
-            <VStack spacing="4" align="flex-start">
-              <Heading as="h2" size={"md"}>
-                Admin Panel
-              </Heading>
-              <VStack my={2} spacing={4}>
-                {menuItems.map((item) => (
-                  <Link as={RouterLink} to={item.path} key={item.path}>
-                    {item.icon} {item.name}
-                  </Link>
-                ))}
-              </VStack>
-            </VStack>
-          </Box>
-          {/* Content Layout */}
-          <Box ml="250px" w="full" overflowY="auto">
-            {errors ? (
-              <Alert status="warning">
-                <AlertIcon />
-                Seems your account session is expire, {' '} <RouterLink to="/login">re-login</RouterLink> {' '} now
-              </Alert>
-            ) : null}
-            <HStack spacing="4" p={2} borderBottom={"1px"} borderColor={"gray.200"}>
-              <InputGroup w={480}>
-                <InputLeftElement pointerEvents="none">
-                  <i className="bx bx-search" />
-                </InputLeftElement>
-                <Input placeholder="Search..." />
-              </InputGroup>
 
-              <Spacer />
-              <Menu>
-                <MenuButton>
-                  <Avatar size="sm" name={user?.first_name} />
-                </MenuButton>
-                <MenuList>
-                  <MenuItem as="button" onClick={onOpenProfile}>
-                    Profile
-                  </MenuItem>
-                  <MenuItem as={RouterLink} to="/admin/settings">
-                    Settings
-                  </MenuItem>
-                  <MenuItem as="button" onClick={onOpen}>
-                    Logout
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </HStack>
-            <Box>
-              <Outlet />
-            </Box>
-          </Box>
+  type NavItemProps = FlexProps & {
+    icon: React.ElementType;
+    children: React.ReactNode;
+    path?: string;
+  }
+  const NavItem = (props: NavItemProps) => {
+    const { icon, children, ...rest } = props;
+    return (
+      <Flex
+        as={RouterLink}
+        to={props.path || '/admin/'}
+        align="center"
+        px="4"
+        mx="2"
+        rounded="md"
+        py="3"
+        cursor="pointer"
+        color="whiteAlpha.700"
+        _hover={{
+          bg: "blackAlpha.300",
+          color: "whiteAlpha.900",
+        }}
+        role="group"
+        fontWeight="semibold"
+        transition=".15s ease"
+        {...rest}
+      >
+        {icon && (
+          <Icon
+            mr="2"
+            boxSize="4"
+            _groupHover={{
+              color: "gray.300",
+            }}
+            as={icon}
+          />
+        )}
+        {children}
+      </Flex>
+    );
+  };
+
+  const SidebarContent = (props: BoxProps) => (
+    <Box
+      as="nav"
+      pos="fixed"
+      top="0"
+      left="0"
+      zIndex="sticky"
+      h="full"
+      pb="10"
+      overflowX="hidden"
+      overflowY="auto"
+      bg="blue.600"
+      borderColor="blackAlpha.300"
+      borderRightWidth="1px"
+      w="60"
+      {...props}
+    >
+      <Flex as={RouterLink} to="/admin" px="4" py="5" align="center">
+        {/* <Logo /> */}
+        <Text fontSize="2xl" ml="2" color="white" fontWeight="semibold">
+          {site.title}
+        </Text>
+      </Flex>
+      <Flex
+        direction="column"
+        as="nav"
+        fontSize="sm"
+        color="gray.600"
+        aria-label="Main Navigation"
+      >
+        {navbarItems.map((navbarItem => <NavItem key={navbarItem.name} icon={navbarItem.icon} path={navbarItem.path}>{navbarItem.name}</NavItem>))}
+        <NavItem icon={FaRss}>Articles</NavItem>
+        <NavItem icon={HiCollection}>Collections</NavItem>
+        <NavItem icon={FaClipboardCheck}>Checklists</NavItem>
+        <NavItem icon={HiCode}>Integrations</NavItem>
+        <NavItem icon={AiFillGift}>Changelog</NavItem>
+        <NavItem icon={BsGearFill}>Settings</NavItem>
+      </Flex>
+    </Box>
+  );
+
+  const AdminUserMenu = (props: AvatarProps) => {
+    return (<Menu>
+      <MenuButton>
+        <Avatar size="sm" name={user?.first_name} {...props} />
+      </MenuButton>
+      <MenuList>
+        <MenuItem as="button" onClick={onOpenProfile}>
+          Profile
+        </MenuItem>
+        <MenuItem as={RouterLink} to="/admin/settings">
+          Settings
+        </MenuItem>
+        <MenuItem as="button" onClick={onOpen}>
+          Logout
+        </MenuItem>
+      </MenuList>
+    </Menu>)
+  }
+
+  return (
+    <Box
+      as="section"
+      bg="gray.50"
+      _dark={{
+        bg: "gray.700",
+      }}
+      minH="100vh"
+    >
+      <SidebarContent
+        display={{
+          base: "none",
+          md: "unset",
+        }}
+      />
+      <Drawer
+        isOpen={sidebar.isOpen}
+        onClose={sidebar.onClose}
+        placement="left"
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <SidebarContent w="full" borderRight="none" />
+        </DrawerContent>
+      </Drawer>
+      <Box
+        ml={{
+          base: 0,
+          md: 60,
+        }}
+        transition=".3s ease"
+      >
+        <Flex
+          as="header"
+          align="center"
+          justify="space-between"
+          w="full"
+          px="4"
+          bg="white"
+          _dark={{
+            bg: "gray.800",
+          }}
+          borderBottomWidth="1px"
+          borderColor="blackAlpha.300"
+          h="14"
+        >
+          <IconButton
+            aria-label="Menu"
+            display={{
+              base: "inline-flex",
+              md: "none",
+            }}
+            onClick={sidebar.onOpen}
+            icon={<FiMenu />}
+            size="sm"
+          />
+          <InputGroup
+            w="96"
+            display={{
+              base: "none",
+              md: "flex",
+            }}
+          >
+            <InputLeftElement color="gray.500">
+              <FiSearch />
+            </InputLeftElement>
+            <Input placeholder="Search..." />
+          </InputGroup>
+
+          <Flex align="center">
+            <Icon color="gray.500" as={FaBell} cursor="pointer" />
+            <AdminUserMenu ml="4" />
+          </Flex>
         </Flex>
-      ) : (
-        <>
-          <Container maxW={CONTAINER_WIDTH}>
-            <Heading size={"md"}>Admin</Heading>
-          </Container>
-          <Container maxW={CONTAINER_WIDTH}>
-            <HStack>
-              {menuItems.map((item, index) => (
-                <Box
-                  key={index}
-                  px={2}
-                  py={2}
-                  cursor="pointer"
-                  display="flex"
-                  gap={2}
-                  _hover={{ backgroundColor: "gray.200" }}
-                  w="full"
-                  rounded="md"
-                  role="button"
-                  onClick={() => navigate(item.path)}>
-                  {item.icon}
-                  <Text>{item.name}</Text>
-                </Box>
-              ))}
-            </HStack>
-          </Container>
-          <Container maxW={CONTAINER_WIDTH}>
-            <Outlet />
-          </Container>
-        </>
-      )}
+
+        <Box as="main" p="4">
+          <Outlet />
+        </Box>
+      </Box>
       <UserMenu.ModalConfirm isOpen={isOpen} onClose={onClose} onConfirm={handleLogout} />
       <UserProfileModal isOpen={isOpenProfile} onClose={onCloseProfile} initUser={userStore.user} onUpdate={handleUpdateUser} />
     </Box>

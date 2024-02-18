@@ -15,8 +15,8 @@ import MainTest from "./pages/MainTest";
 
 const theme = extendTheme({
   fonts: {
-    heading: `'Open Sans', sans-serif`,
-    body: `'Arial', sans-serif`,
+    heading: "'Inter', sans-serif",
+    body: "'Inter', sans-serif",
     mono: "Consolas, monospace",
   },
 });
