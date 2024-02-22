@@ -6,49 +6,50 @@ from uuid import uuid4
 
 
 def get_list_examination(db: Session):
-    data = (
-        db.query(
-            models.Exam,
-            models.Part,
-            models.QuestionGroup,
-            models.Question,
-            models.Answer,
-        )
-        .join(models.Part, models.Part.exam_id == models.Exam.id)
-        .join(
-            models.QuestionGroup,
-            models.QuestionGroup.part_id == models.Part.id,
-            isouter=True,
-        )
-        .join(
-            models.Question,
-            models.Question.group_id == models.QuestionGroup.id,
-            isouter=True,
-        )
-        .join(
-            models.Answer, models.Answer.question_id == models.Question.id, isouter=True
-        )
-        .filter(models.Exam.id == "45bd1bae-a30b-4f7e-8da4-3b4cf48c1640")
-        .all()
-    )
-    result = []
-    for exam, part, question_group, question, answer in data:
-        exam = jsonable_encoder(exam)
-        part = jsonable_encoder(part)
-        question_group = jsonable_encoder(question_group)
-        question = jsonable_encoder(question)
-        answer = jsonable_encoder(answer)
-        result.append(
-            {
-                "exam": exam,
-                "part": part,
-                "question_group": question_group,
-                "question": question,
-                "answer": answer,
-            }
-        )
-
-    return result
+    # data = (
+    #     db.query(
+    #         models.Exam,
+    #         models.Part,
+    #         models.QuestionGroup,
+    #         models.Question,
+    #         models.Answer,
+    #     )
+    #     .join(models.Part, models.Part.exam_id == models.Exam.id)
+    #     .join(
+    #         models.QuestionGroup,
+    #         models.QuestionGroup.part_id == models.Part.id,
+    #         isouter=True,
+    #     )
+    #     .join(
+    #         models.Question,
+    #         models.Question.group_id == models.QuestionGroup.id,
+    #         isouter=True,
+    #     )
+    #     .join(
+    #         models.Answer, models.Answer.question_id == models.Question.id, isouter=True
+    #     )
+    #     .filter(models.Exam.id == "45bd1bae-a30b-4f7e-8da4-3b4cf48c1640")
+    #     .all()
+    # )
+    # result = []
+    # for exam, part, question_group, question, answer in data:
+    #     exam = jsonable_encoder(exam)
+    #     part = jsonable_encoder(part)
+    #     question_group = jsonable_encoder(question_group)
+    #     question = jsonable_encoder(question)
+    #     answer = jsonable_encoder(answer)
+    #     result.append(
+    #         {
+    #             "exam": exam,
+    #             "part": part,
+    #             "question_group": question_group,
+    #             "question": question,
+    #             "answer": answer,
+    #         }
+    #     )
+    #
+    # return result
+    return db.query(models.Exam).order_by(models.Exam.display_order.desc()).all()
 
 
 def create_new_examination(db: Session, exam: schema.ExamInput):
@@ -220,7 +221,7 @@ def create_new_question(db: Session, question: schema.QuestionInputGroup):
 
 
 def update_question_group(
-    db: Session, question_group_id: str, data: schema.QuestionGroupUpdate
+        db: Session, question_group_id: str, data: schema.QuestionGroupUpdate
 ):
     db_question_group = (
         db.query(models.QuestionGroup)

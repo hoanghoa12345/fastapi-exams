@@ -1,11 +1,13 @@
 import { Box, HStack, VStack, Spinner, Center, Text, Stack, Progress, Skeleton, Flex } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams, Link } from "react-router-dom";
+import styled from "@emotion/styled";
 
 import QuestionPanel from "@/components/questions/QuestionPanel";
 import { useFetch } from "@/hooks/useFetch";
-import { useParams, useSearchParams, Link } from "react-router-dom";
 import { Exam } from "@/types";
 import ErrorPage from "./ErrorPage";
-import styled from "@emotion/styled";
+import { ExamAPI } from "@/services/web/examApi";
 
 const QuestionPalette = styled.div`
 
@@ -33,7 +35,26 @@ const QuestionPalette = styled.div`
 function MainTest() {
   const { testId } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
-  const { isLoading, data, error } = useFetch<Exam>(`/api/v1/exams/${testId}`);
+  // const { isLoading, data, error } = useFetch<Exam>(`/api/v1/exams/${testId}`);
+
+  const [data, setData] = useState<Exam>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    try {
+      const { data } = await ExamAPI.getById(String(testId));
+      setData(data);
+      setIsLoading(false);
+    } catch (error) {
+      setError("Error fetching data");
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   if (error) return <ErrorPage />;
 
   const setTabActive = (index: number) => {

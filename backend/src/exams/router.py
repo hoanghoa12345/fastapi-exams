@@ -27,7 +27,8 @@ async def get_all_examinations_items(db: Session = Depends(get_db)):
     log.setLevel(logging.INFO)
     log.info('Get all examinations!')
 
-    return db.query(models.Exam).all()
+    return db.query(models.Exam).filter(models.Exam.is_published == True).order_by(
+        models.Exam.display_order.desc()).all()
 
 
 @exam_router.get('/get-all')
@@ -92,8 +93,9 @@ async def post_create_new_question(db: Session = Depends(get_db),
 
 @exam_router.put('/question-groups/{question_group_id}', tags=['Question Groups'])
 async def update_question_group(db: Session = Depends(get_db), question_group_id: str = None,
-                                      data: schema.QuestionGroupUpdate = None):
+                                data: schema.QuestionGroupUpdate = None):
     return service.update_question_group(db, question_group_id, data)
+
 
 @exam_router.put('/questions/{question_id}', tags=['Questions'])
 async def update_question(db: Session = Depends(get_db), question_id: str = None, data: schema.QuestionUpdate = None):

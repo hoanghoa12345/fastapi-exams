@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
 import { useFetch } from "@/hooks/useFetch";
-import { Avatar, Box, Container, Flex, Image, Skeleton, Spinner, Stack, Text, VStack, Grid } from "@chakra-ui/react";
-import { UserMenu } from "@/components/menus/UserMenu";
+import { Box, Container, Image, Skeleton, Stack, Text, SimpleGrid } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useUserStore } from "@/stores/useUserStore";
-import { authApi } from "@/services/authApi";
 import styled from "@emotion/styled";
+import { FILE_URL } from "@/utils/constants";
+import { useEffect, useState } from "react";
+import { ExamAPI } from "@/services/web/examApi";
+import { Exam } from "@/types";
 
 const CardTopicTest = styled.div`
   border-radius: 0.75rem;
@@ -23,6 +23,8 @@ const CardTopicTest = styled.div`
     height: 10rem;
     transition: transform 0.2s ease-in-out;
     filter: brightness(0.8);
+    object-fit: cover;
+    background-color: #f5f5f5;
     &:hover {
       transform: scale(1.05);
     }
@@ -34,33 +36,34 @@ const CardTopicTest = styled.div`
     text-transform: uppercase;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2
+    -webkit-line-clamp: 2;
   }
 `;
 
-type Exam = {
-  id: string;
-  name: string;
-};
 const ListTest = () => {
-  const { data, isLoading, error } = useFetch<Exam[]>("/api/v1/exams");
+  // const { data, isLoading, error } = useFetch<Exam[]>("/v1/exams");
+  const [data, setData] = useState<Exam[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const userStore = useUserStore();
 
-  const fetchCurrentUser = () => {
-    const accessToken = localStorage.getItem("token");
-    if (accessToken) {
-      authApi.me(accessToken).then((res) => {
-        userStore.setUser(res.data);
-      });
+  const fetchData = async () => {
+    try {
+      const { data } = await ExamAPI.getAll();
+      setData(data);
+      setIsLoading(false);
+    } catch (error) {
+      setError("Error fetching data");
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCurrentUser();
+    fetchData();
   }, []);
+
   return (
-    <Container maxW={"3xl"}>
+    <Container maxW={"4xl"}>
       {isLoading ? (
         <Stack my={4} padding="6" boxShadow="lg" bg="white">
           <Skeleton w={"40%"} h={4} />
@@ -69,40 +72,48 @@ const ListTest = () => {
           <Skeleton w={"60%"} h={4} />
         </Stack>
       ) : data && data.length > 0 ? (
-        <Grid my={8} templateColumns="repeat(3, 1fr)" gap={6}>
+        <SimpleGrid my={8} columns={{ base: 1, md: 2, lg: 3 }} spacing={6} placeItems="center">
           {data.map((item: Exam) => (
-            <CardTopicTest
-              role="button"
-              onClick={() => navigate(`/tests/${item.id}`)}
-              key={item.id}>
-              <Image className="topic__image" w="100%" h="100%" objectFit="cover" src="https://picsum.photos/300" alt="" />
+            <CardTopicTest role="button" onClick={() => navigate(`/tests/${item.id}`)} key={item.id}>
+              <Image
+                className="topic__image"
+                w="100%"
+                h="100%"
+                objectFit="cover"
+                src={`${FILE_URL}${item.thumbnail_path}`}
+                alt={item.name}
+              />
               <Box py={3} px={2}>
                 <Text className="topic__name" fontSize={"inherit"} fontWeight={"bold"} minH="2rem">
                   {item.name}
                 </Text>
                 <Stack direction={"row"} justifyContent={"space-between"}>
                   <Stack>
-                    <Text fontSize={"sm"} textColor={'gray.600'} fontWeight={"bold"}>
+                    <Text fontSize={"sm"} textColor={"gray.600"} fontWeight={"bold"}>
                       0/200
                     </Text>
-                    <Text fontSize={"sm"} textColor={'gray.600'}>Attempted</Text>
+                    <Text fontSize={"sm"} textColor={"gray.600"}>
+                      Attempted
+                    </Text>
                   </Stack>
                   <Stack>
-                    <Text fontSize={"sm"} textColor={'gray.600'} fontWeight={"bold"}>
+                    <Text fontSize={"sm"} textColor={"gray.600"} fontWeight={"bold"}>
                       0
                     </Text>
-                    <Text fontSize={"sm"} textColor={'gray.600'}>Participants</Text>
+                    <Text fontSize={"sm"} textColor={"gray.600"}>
+                      Participants
+                    </Text>
                   </Stack>
                 </Stack>
               </Box>
             </CardTopicTest>
           ))}
-        </Grid>
-      ) : (
+        </SimpleGrid>
+      ) : data?.length === 0 || error ? (
         <Text py={5} textAlign={"center"}>
           No have test
         </Text>
-      )}
+      ) : null}
     </Container>
   );
 };

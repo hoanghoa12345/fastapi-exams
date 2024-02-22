@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from .users.router import user_router
 from .exams.router import exam_router
 
@@ -24,7 +25,7 @@ app.add_middleware(
 )
 app.include_router(user_router)
 app.include_router(exam_router)
-
+app.mount("/files", StaticFiles(directory="uploads"), name="files")
 
 @app.get('/')
 async def root():

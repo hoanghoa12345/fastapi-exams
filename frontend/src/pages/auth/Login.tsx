@@ -16,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "@/services/authApi";
 import { userRoles } from "@/utils/constants";
 import { AxiosError } from "axios";
+import { Cookies } from "@/utils/cookie";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = React.useState("");
@@ -42,7 +43,8 @@ const LoginPage: React.FC = () => {
       formData.append("password", password);
       const { data } = await authApi.login(formData);
       if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
+        // localStorage.setItem("token", data.access_token);
+        Cookies.set("token", data.access_token, 90);
         setSuccess("Login successful");
         if (data.role === userRoles.ADMIN) {
           navigate("/admin");

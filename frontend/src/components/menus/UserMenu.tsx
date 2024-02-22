@@ -23,6 +23,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "@/stores/useUserStore";
 import { userRoles } from "@/utils/constants";
+import { Cookies } from "@/utils/cookie";
 
 export const UserMenu = () => {
   const navigate = useNavigate();
@@ -31,7 +32,8 @@ export const UserMenu = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleLogout = () => {
     userStore.removeUser();
-    localStorage.removeItem("token");
+    // localStorage.removeItem("token");
+    Cookies.remove("token");
     onClose();
     navigate("/login");
   };

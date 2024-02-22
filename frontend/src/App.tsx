@@ -12,6 +12,7 @@ import ProfilePage from "./pages/Profile";
 import RegisterPage from "./pages/auth/Register";
 import MainLayout from "./layouts/MainLayout";
 import MainTest from "./pages/MainTest";
+import Dashboard from "./pages/admin/Dashboard";
 
 const theme = extendTheme({
   fonts: {
@@ -69,7 +70,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <p>Dashboard</p>,
+        element: <Dashboard />,
       },
       {
         path: "create-test",

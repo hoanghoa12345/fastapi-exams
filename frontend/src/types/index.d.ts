@@ -1,7 +1,14 @@
 export interface Exam {
   id: string;
   name: string;
-  audio_file: any;
+  audio_file: string;
+  type: string;
+  duration: string;
+  display_order: number;
+  date: string;
+  thumbnail_path: string;
+  is_published: boolean;
+  description: string;
   parts: Part[];
 }
 

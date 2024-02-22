@@ -57,6 +57,5 @@ def upgrade() -> None:
         "users", "is_active", existing_type=sa.Boolean(), existing_nullable=True
     )
 
-
 def downgrade() -> None:
     pass

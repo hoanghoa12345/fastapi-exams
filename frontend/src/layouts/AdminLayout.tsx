@@ -37,6 +37,7 @@ import { authApi } from "@/services/authApi";
 import { userRoles } from "@/utils/constants";
 import UserProfileModal from "@/components/modals/UserProfileModal";
 import { UserMenu } from "@/components/menus/UserMenu";
+import { Cookies } from "@/utils/cookie";
 
 
 const AdminLayout = () => {
@@ -67,7 +68,8 @@ const AdminLayout = () => {
     },
   ];
   const fetchCurrentUser = () => {
-    const accessToken = localStorage.getItem("token");
+    // const accessToken = localStorage.getItem("token");
+    const accessToken = Cookies.get("token");
     if (accessToken) {
       authApi
         .me(accessToken)
@@ -163,9 +165,9 @@ const AdminLayout = () => {
       w="60"
       {...props}
     >
-      <Flex as={RouterLink} to="/admin" px="4" py="5" align="center">
+      <Flex px="4" py="5" align="center">
         {/* <Logo /> */}
-        <Text fontSize="2xl" ml="2" color="white" fontWeight="semibold">
+        <Text as={RouterLink} to="/admin" fontSize="2xl" ml="2" color="white" fontWeight="semibold">
           {site.title}
         </Text>
       </Flex>

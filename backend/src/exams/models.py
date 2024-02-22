@@ -11,6 +11,13 @@ class Exam(Base):
     name = Column(String(256))
     audio_file = Column(String(500))
     parts = relationship("Part", back_populates="exams")
+    type = Column(String(256))
+    date = Column(String(256))
+    duration = Column(Integer)
+    thumbnail_path = Column(String(500))
+    description = Column(String(500))
+    is_published = Column(Boolean)
+    display_order = Column(Integer)
 
 
 class Part(Base):

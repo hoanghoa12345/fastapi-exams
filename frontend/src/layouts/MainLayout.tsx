@@ -1,31 +1,30 @@
-import React from "react";
-import { UserMenu } from "@/components/menus/UserMenu";
+import { useEffect } from "react";
 import { Box, Flex } from "@chakra-ui/react";
-import { Link, Outlet } from "react-router-dom";
-import styled from "@emotion/styled";
+import { Outlet } from "react-router-dom";
+
 import Navbar from "@/components/header/Navbar";
+import { useUserStore } from "@/stores/useUserStore";
+import { authApi } from "@/services/authApi";
+import { Cookies } from "@/utils/cookie";
 
 const MainLayout = () => {
-  const Logo = styled.div`
-    font-family: "Lato", sans-serif;
-    font-weight: bold;
-    font-size: 1.5rem;
-  `;
+  const userStore = useUserStore();
+
+  const fetchCurrentUser = () => {
+    const accessToken = Cookies.get("token");
+    if (accessToken) {
+      authApi.me(accessToken).then((res) => {
+        userStore.setUser(res.data);
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
 
   return (
     <Flex direction={"column"} h="100vh">
-      {/* <Box bg="white" boxShadow={'md'}> */}
-      {/*   <Flex h={16} alignItems={"center"} justifyContent={"space-between"}> */}
-      {/*     <Box px={4}> */}
-      {/*       <Link to="/"> */}
-      {/*         <Logo>EStudy</Logo> */}
-      {/*       </Link> */}
-      {/*     </Box> */}
-      {/*     <Box px={4}> */}
-      {/*       <UserMenu /> */}
-      {/*     </Box> */}
-      {/*   </Flex> */}
-      {/* </Box> */}
       <Navbar />
       <Box flex={1}>
         <Outlet />

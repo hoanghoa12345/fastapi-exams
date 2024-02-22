@@ -1,5 +1,6 @@
 import { API_URL } from "@/utils/constants";
-import axios, { AxiosInstance } from "axios";
+import { Cookies } from "@/utils/cookie";
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -9,11 +10,16 @@ export const api: AxiosInstance = axios.create({
   },
 });
 
+api.interceptors.request.use((config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+  config.headers.Authorization = `Bearer ${Cookies.get("token")}`;
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response.status === 401) {
-      localStorage.removeItem("token");
+      Cookies.remove("token");
     }
     return Promise.reject(error);
   }
