@@ -1,54 +1,12 @@
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import desc, exc
+from sqlalchemy.orm import Session, joinedload, subqueryload
+from sqlalchemy import desc, asc
 from . import models, schema
 from fastapi.encoders import jsonable_encoder
 from uuid import uuid4
+from sqlalchemy.sql import text
 
 
 def get_list_examination(db: Session):
-    # data = (
-    #     db.query(
-    #         models.Exam,
-    #         models.Part,
-    #         models.QuestionGroup,
-    #         models.Question,
-    #         models.Answer,
-    #     )
-    #     .join(models.Part, models.Part.exam_id == models.Exam.id)
-    #     .join(
-    #         models.QuestionGroup,
-    #         models.QuestionGroup.part_id == models.Part.id,
-    #         isouter=True,
-    #     )
-    #     .join(
-    #         models.Question,
-    #         models.Question.group_id == models.QuestionGroup.id,
-    #         isouter=True,
-    #     )
-    #     .join(
-    #         models.Answer, models.Answer.question_id == models.Question.id, isouter=True
-    #     )
-    #     .filter(models.Exam.id == "45bd1bae-a30b-4f7e-8da4-3b4cf48c1640")
-    #     .all()
-    # )
-    # result = []
-    # for exam, part, question_group, question, answer in data:
-    #     exam = jsonable_encoder(exam)
-    #     part = jsonable_encoder(part)
-    #     question_group = jsonable_encoder(question_group)
-    #     question = jsonable_encoder(question)
-    #     answer = jsonable_encoder(answer)
-    #     result.append(
-    #         {
-    #             "exam": exam,
-    #             "part": part,
-    #             "question_group": question_group,
-    #             "question": question,
-    #             "answer": answer,
-    #         }
-    #     )
-    #
-    # return result
     return db.query(models.Exam).order_by(models.Exam.display_order.desc()).all()
 
 
@@ -65,28 +23,39 @@ def create_new_examination(db: Session, exam: schema.ExamInput):
 
 
 def get_examinations_by_exam_id(db: Session, exam_id: str):
+    # exam_db = (
+    #     db.query(models.Exam)
+    #     .join(models.Part)
+    #     .options(joinedload(models.Exam.parts))
+    #     .filter(models.Exam.id == exam_id)
+    #     .order_by(models.Part.part_index.asc())
+    #     .first()
+    # )
+    #
+    # return schema.ExamSchema.from_orm(exam_db)
+    # exam_db = text("SELECT * FROM exams WHERE id = :id")
+
+    # result = db.execute(exam_db, {"id": exam_id}).first()
+
+    # convert dictionary to object
+    # result = schema.ExamSchema.from_orm(result)
+    #
+    # return result
     exam_db = (
         db.query(models.Exam)
-        .options(joinedload(models.Exam.parts))
+        .join(models.Part, models.Exam.parts)
+        .join(models.QuestionGroup, models.Part.question_groups)
+        .join(models.Question, models.QuestionGroup.questions)
+        .join(models.Answer, models.Question.answers)
         .filter(models.Exam.id == exam_id)
+        .order_by(models.Part.part_index.asc())
+        .order_by(models.QuestionGroup.group_index.asc())
+        .order_by(models.Question.question_index.asc())
+        .order_by(models.Answer.answer_index.asc())
         .first()
     )
 
-    if exam_db:
-        # Manually sort the parts in Python based on part_index
-        exam_db.parts = sorted(exam_db.parts, key=lambda part: part.part_index)
-
     return schema.ExamSchema.from_orm(exam_db)
-
-    # exam_db = (
-    #     db.query(models.Exam)
-    #     .options(joinedload(models.Exam.parts))
-    #     .filter(models.Exam.id == exam_id)
-    #     .join(models.Part, models.Exam.parts)  # Explicitly join on the relationship
-    #     .order_by(models.Part.part_index.asc())  # Order by the Part's part_index
-    #     .first()
-    # )
-    # return schema.ExamSchema.from_orm(exam_db)
 
 
 def get_examination_by_id(db: Session, exam_id: str):

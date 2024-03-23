@@ -1,7 +1,8 @@
-import { Box, HStack, VStack, Spinner, Center, Text, Stack, Progress, Skeleton, Flex } from "@chakra-ui/react";
+import { Box, HStack, VStack, Spinner, Center, Text, Stack, Progress, Skeleton, Flex, Icon } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import styled from "@emotion/styled";
+import { LuAlarmClock } from "react-icons/lu";
 
 import QuestionPanel from "@/components/questions/QuestionPanel";
 import { useFetch } from "@/hooks/useFetch";
@@ -10,7 +11,6 @@ import ErrorPage from "./ErrorPage";
 import { ExamAPI } from "@/services/web/examApi";
 
 const QuestionPalette = styled.div`
-
   .tab__heading {
     background-color: #fafafb;
     padding: 0.5rem 1rem;
@@ -30,7 +30,7 @@ const QuestionPalette = styled.div`
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
   }
-`
+`;
 
 function MainTest() {
   const { testId } = useParams();
@@ -64,51 +64,72 @@ function MainTest() {
   return (
     <Box h="full" bg="#f2f3f7">
       <HStack h="full">
-        < VStack w={450} minH="full" >
+        <VStack w={450} minH="full">
           <Box py={4}>
-            <Text fontSize="2xl" fontWeight="bold" sx={{ textTransform: "uppercase" }}>{data?.name}</Text>
+            <Text fontSize="2xl" fontWeight="bold" sx={{ textTransform: "uppercase" }}>
+              {data?.name}
+            </Text>
           </Box>
           <Box>
             <QuestionPalette>
-              <Box className="tab__heading" >{data?.name}</Box>
+              <Box className="tab__heading">{data?.name}</Box>
               <Box className="tab__content" display="flex" flexDir="column" px={4} py={4}>
                 <Text>Question Palette</Text>
-                {isLoading ? (<VStack spacing={2} align="left">
-                  <Skeleton width="80%" h={4} />
-                  <Skeleton width="full" h={4} />
-                  <Skeleton width="60%" h={4} />
-                  <Skeleton width="80%" h={4} />
-                  <Skeleton width="full" h={4} />
-                  <Skeleton width="60%" h={4} />
-                  <Skeleton width="80%" h={4} />
-                  <Skeleton width="full" h={4} />
-                  <Skeleton width="60%" h={4} />
-                  <Skeleton width="80%" h={4} />
-                  <Skeleton width="full" h={4} />
-                  <Skeleton width="60%" h={4} />
-                </VStack>) : (
+                {isLoading ? (
+                  <VStack spacing={2} align="left">
+                    <Skeleton width="80%" h={4} />
+                    <Skeleton width="full" h={4} />
+                    <Skeleton width="60%" h={4} />
+                    <Skeleton width="80%" h={4} />
+                    <Skeleton width="full" h={4} />
+                    <Skeleton width="60%" h={4} />
+                    <Skeleton width="80%" h={4} />
+                    <Skeleton width="full" h={4} />
+                    <Skeleton width="60%" h={4} />
+                    <Skeleton width="80%" h={4} />
+                    <Skeleton width="full" h={4} />
+                    <Skeleton width="60%" h={4} />
+                  </VStack>
+                ) : (
                   <Box overflowY="auto" h="full" maxH={300} flex={1}>
-                    {data && data.parts.map((part) => (
-                      <Box key={part.id}>
-                        <Text fontWeight="bold" py={2}>{part.name}</Text>
-                        <Flex flexWrap="wrap" gap={2} py={2}>
-                          {part.question_groups.map((questionGroup) => questionGroup.questions.map((question, index) => (
-                            <Box key={question.id} bg="gray.100" px={3} py={1.5} borderRadius={8} cursor="pointer">
-                              <Text fontSize="sm" fontWeight="bold" textColor="blackAlpha.600">{index}</Text>
-                            </Box>)))}
-                        </Flex>
-                      </Box>
-                    ))}
-                  </Box>)}
+                    {data &&
+                      data.parts.map((part) => (
+                        <Box key={part.id}>
+                          <Text fontWeight="bold" py={2}>
+                            {part.name}
+                          </Text>
+                          <Flex flexWrap="wrap" gap={2} py={2}>
+                            {part.question_groups.map((questionGroup) =>
+                              questionGroup.questions.map((question, index) => (
+                                <Box key={question.id} bg="gray.100" px={3} py={1.5} borderRadius={8} cursor="pointer">
+                                  <Text fontSize="sm" fontWeight="bold" textColor="blackAlpha.600">
+                                    {question.question_index}
+                                  </Text>
+                                </Box>
+                              ))
+                            )}
+                          </Flex>
+                        </Box>
+                      ))}
+                  </Box>
+                )}
                 <HStack>
-                  <Progress w="full" bgColor={'blackAlpha.200'} borderRadius={8} value={3} colorScheme="green" size="sm" />
-                  <Text fontSize="sm" fontWeight="bold">-/200</Text>
+                  <Progress w="full" bgColor={"blackAlpha.200"} borderRadius={8} value={3} colorScheme="green" size="sm" />
+                  <Text fontSize="sm" fontWeight="bold">
+                    -/200
+                  </Text>
                 </HStack>
               </Box>
             </QuestionPalette>
           </Box>
-        </VStack >
-        <Box h="full" w="full" overflowY="auto" bg="white">
+        </VStack>
+        <Box h="full" w="full" overflowY="auto">
+          <Flex gap={2} alignItems="center" py={4} justifyContent="center">
+            <Icon as={LuAlarmClock} w={8} h={8} />
+            <Text fontWeight={600} color="green.500">
+              00:00:00
+            </Text>
+          </Flex>
           {isLoading ? (
             <Center h="full">
               <Spinner />
@@ -117,8 +138,8 @@ function MainTest() {
             <QuestionPanel data={data} activeTab={Number(searchParams.get("part")) || 1} onTabChange={setTabActive} />
           ) : null}
         </Box>
-      </HStack >
-    </Box >
+      </HStack>
+    </Box>
   );
 }
 

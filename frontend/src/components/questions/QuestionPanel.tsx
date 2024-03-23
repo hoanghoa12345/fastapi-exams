@@ -1,4 +1,4 @@
-import { Tabs, TabList, TabPanels, Tab, TabPanel, Box, Flex, Button, Card, CardBody, Divider } from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel, Box, Flex, Button, Card, CardBody, Divider, Text } from "@chakra-ui/react";
 import React from "react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import QuestionCard from "./QuestionCard";
@@ -24,43 +24,20 @@ function QuestionPanel({ data, activeTab, onTabChange }: Props) {
 
   return (
     <>
-      <Tabs variant="enclosed" colorScheme="cyan" index={tabIndex} onChange={handleTabsChange} mt={4}>
-        <TabList>
-          {data.parts.map((part) => (
-            <Tab key={part.id}>{part.name}</Tab>
-          ))}
-        </TabList>
-
-        <TabPanels>
-          {data.parts.map((part) => (
-            <TabPanel key={part.id}>
-              <Box>
-                {part.question_groups.map((questionGroup, index) => (
-                  <Box key={questionGroup.id}>
-                    {questionGroup.questions.map((question) => (
-                      <QuestionCard key={question.id} question={question} />
-                    ))}
-                    <Divider />
-                  </Box>
+      {data.parts.map((part) => (
+        <Box key={part.id}>
+          {part.question_groups.map((questionGroup, index) => (
+            <Card key={questionGroup.id} borderRadius={14} mb={4} boxShadow="sm">
+              <CardBody>
+                <Text fontWeight={600}>Question {questionGroup.name || questionGroup.group_index}</Text>
+                {questionGroup.questions.map((question) => (
+                  <QuestionCard key={question.id} question={question} />
                 ))}
-              </Box>
-            </TabPanel>
+              </CardBody>
+            </Card>
           ))}
-        </TabPanels>
-      </Tabs>
-      <Flex justify={"space-between"} mx={4}>
-        {tabIndex > 0 ? (
-          <Button colorScheme="teal" variant={"outline"} onClick={() => handleTabsChange(tabIndex - 1)}>
-            <ChevronLeftIcon />
-            <span>Previous page</span>
-          </Button>
-        ) : null}
-        {tabIndex < data.parts.length - 1 ? (
-          <Button colorScheme="teal" variant="outline" onClick={() => handleTabsChange(tabIndex + 1)}>
-            <span>Next page </span> <ChevronRightIcon />
-          </Button>
-        ) : null}
-      </Flex>
+        </Box>
+      ))}
     </>
   );
 }

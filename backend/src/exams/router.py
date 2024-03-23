@@ -36,7 +36,7 @@ async def get_all_examinations_items(db: Session = Depends(get_db)):
     return service.get_list_examination(db)
 
 
-@exam_router.get('/{exam_id}', response_model=schema.ExamSchema)
+@exam_router.get('/{exam_id}')  # , response_model=schema.ExamSchema)
 async def get_examination_by_id(exam_id: str, db: Session = Depends(get_db)):
     return service.get_examinations_by_exam_id(db, exam_id)
 

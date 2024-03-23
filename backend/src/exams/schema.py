@@ -35,6 +35,7 @@ class AnswerSchema(BaseModel):
     id: str
     title: str
     question_id: str
+    answer_index: Optional[int]
 
     class Config:
         orm_mode = True
@@ -47,6 +48,7 @@ class QuestionSchema(BaseModel):
     image: str | None
     group_id: str
     answers: List[AnswerSchema]
+    question_index: Optional[int]
 
     class Config:
         orm_mode = True
@@ -80,6 +82,13 @@ class ExamSchema(BaseModel):
     name: str
     audio_file: str | None
     parts: List[PartSchema]
+    type: Optional[str]
+    date: Optional[str]
+    duration: Optional[str]
+    thumbnail_path: Optional[str]
+    description: Optional[str]
+    is_published: Optional[str]
+    display_order: Optional[int]
 
     class Config:
         orm_mode = True

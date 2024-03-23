@@ -26,6 +26,7 @@ export interface QuestionGroup {
   image: string;
   paragraph: string;
   questions: Question[];
+  group_index: string;
 }
 
 export interface Question {
@@ -35,12 +36,14 @@ export interface Question {
   image: any;
   group_id: string;
   answers: Answer[];
+  question_index: number;
 }
 
 export interface Answer {
   id: string;
   title: string;
   question_id: string;
+  answer_index: number;
 }
 
 export interface QuestionGroupUpdate {

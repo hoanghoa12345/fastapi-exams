@@ -61,7 +61,7 @@ export const UserMenu = () => {
           </MenuItem>
           <MenuDivider />
           {userStore.user?.role === userRoles.ADMIN ? (
-            <MenuItem as={Link} to="/admin">
+            <MenuItem as={Link} to="/admin" target="_blank">
               Admin
             </MenuItem>
           ) : null}

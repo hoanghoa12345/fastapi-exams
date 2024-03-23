@@ -1,0 +1,40 @@
+services:
+  mysql:
+    image: mysql/mysql-server:8.0.32
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    env_file:
+      - ./.env
+  backend:
+    container_name: backend
+    platform: linux/amd64
+    build: ./backend/
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mysql
+    tty: true
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+  frontend:
+    container_name: frontend
+    platform: linux/amd64
+    build: ./frontend
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+volumes:
+  db-data:
+networks:
+  default:

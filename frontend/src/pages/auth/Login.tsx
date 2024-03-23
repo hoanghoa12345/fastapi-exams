@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Flex,
@@ -13,39 +13,43 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { authApi } from "@/services/authApi";
 import { userRoles } from "@/utils/constants";
 import { AxiosError } from "axios";
 import { Cookies } from "@/utils/cookie";
 
+const LoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
-  const [success, setSuccess] = React.useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [isInvalid, setIsInvalid] = React.useState({
-    email: false,
-    password: false,
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
   });
 
-  const navigate = useNavigate();
-
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit = async ({ email, password }: z.infer<typeof LoginSchema>) => {
     try {
       setIsLoading(true);
-      setError("");
-      setSuccess("");
+      setSubmitError(null);
       const formData = new FormData();
       formData.append("username", email);
       formData.append("password", password);
       const { data } = await authApi.login(formData);
       if (data.access_token) {
-        // localStorage.setItem("token", data.access_token);
         Cookies.set("token", data.access_token, 90);
-        setSuccess("Login successful");
         if (data.role === userRoles.ADMIN) {
           navigate("/admin");
         } else {
@@ -53,29 +57,12 @@ const LoginPage: React.FC = () => {
         }
       }
     } catch (error) {
-      setError("Invalid email or password");
       if (error instanceof AxiosError) {
-        setError(error.response?.data.detail);
+        setSubmitError(error.response?.data.detail);
       }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-    setIsInvalid({
-      ...isInvalid,
-      email: event.target.value.trim() === "",
-    });
-  };
-
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-    setIsInvalid({
-      ...isInvalid,
-      password: event.target.value.trim() === "",
-    });
   };
 
   return (
@@ -100,50 +87,30 @@ const LoginPage: React.FC = () => {
           <Text mb={4} fontSize="sm" color="gray.500">
             Please login to continue
           </Text>
-          {error ? (
-            <Alert status="error" mb={2}>
+          {submitError ? (
+            <Alert fontSize={12} status="error" mb={2}>
               <AlertIcon />
-              {Array.isArray(error) ? error.map((e) => <React.Fragment key={e.type}>{e.msg}</React.Fragment>) : error}
+              {JSON.stringify(submitError)}
             </Alert>
           ) : null}
-          <form onSubmit={handleLogin}>
-            <FormControl isInvalid={isInvalid.email} mb={4}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormControl isInvalid={Boolean(errors.email)} mb={4}>
               <Input
                 placeholder="Email"
                 variant="outline"
                 type="email"
-                onChange={handleEmailChange}
-                value={email}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                autoFocus
-                required
-                minLength={5}
-                maxLength={50}
-                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                title="Please enter a valid email address"
+                {...register("email")}
               />
-              <FormErrorMessage>Please enter a valid email address</FormErrorMessage>
+              <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={isInvalid.password} mb={4}>
+            <FormControl isInvalid={Boolean(errors.password)} mb={4}>
               <Input
                 placeholder="Password"
                 variant="outline"
                 type="password"
-                onChange={handlePasswordChange}
-                value={password}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                required
-                minLength={5}
-                maxLength={50}
-                title="Please enter a valid password"
+                {...register("password")}
               />
-              <FormErrorMessage>Please enter a valid password</FormErrorMessage>
+              <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
             </FormControl>
             <Button type="submit" colorScheme="teal" width="full" isLoading={isLoading}>
               Sign In
