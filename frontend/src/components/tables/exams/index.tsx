@@ -1,9 +1,6 @@
-import * as React from "react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { DataTable } from "../DataTable";
 import { Exam } from "@/types";
 import { FILE_URL } from "@/utils/constants";
-import { Image } from "@chakra-ui/react";
+import { Image, Chip } from "@mantine/core";
 import { useMemo } from "react";
 import {
   MantineReactTable,
@@ -12,38 +9,14 @@ import {
   MRT_GlobalFilterTextInput,
   MRT_ToggleFiltersButton,
 } from "mantine-react-table";
-import { Box, Button, Flex, Menu, Text, Title } from "@mantine/core";
-import { IconUserCircle, IconSend } from "@tabler/icons-react";
-// const columnHelper = createColumnHelper<Exam>();
-// const columns = [
-//   columnHelper.accessor("name", {
-//     cell: (info) => info.getValue(),
-//     header: "Name",
-//   }),
-//   columnHelper.accessor("audio_file", {
-//     cell: (info) => info.getValue(),
-//     header: "Audio File",
-//   }),
-//   columnHelper.accessor("date", {
-//     cell: (info) => info.getValue(),
-//     header: "Date",
-//   }),
-//   columnHelper.accessor("thumbnail_path", {
-//     cell: (info) => <Image src={`${FILE_URL}${info.getValue()}`} alt="preview" boxSize={100} objectFit='contain' />,
-//     header: "Thumbnail",
-//   }),
-//   columnHelper.accessor("is_published", {
-//     cell: (info) => info.getValue() ? 'true' : 'false',
-//     header: "Publish",
-//   }),
-// ];
+import { Box, Button, Flex, Menu, Text, Title, ActionIcon } from "@mantine/core";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
+
+import PartExpanded from "./expanded/PartExpanded";
 interface ExamTableProps {
   data: Exam[];
 }
-// export default function ExamsTable({ data }: ExamTableProps) {
-// return <DataTable columns={columns} data={data} />;
-// }
-const ExamsTable = ({ data }: ExamTableProps) => {
+export default function ExamsTable({ data }: ExamTableProps) {
   const columns = useMemo<MRT_ColumnDef<Exam>[]>(
     () => [
       {
@@ -81,6 +54,21 @@ const ExamsTable = ({ data }: ExamTableProps) => {
                   backgroundColor: theme.colors.yellow[9],
                 })}>
                 <span>{renderedCellValue}</span>
+              </Box>
+            ),
+          },
+          {
+            accessorKey: "thumbnail_path",
+            header: "Thumbnail",
+            Cell: ({ renderedCellValue }) => (
+              <Box>
+                {renderedCellValue ? (
+                  <Image src={`${FILE_URL}${renderedCellValue}`} alt="preview" h={150} />
+                ) : (
+                  <Chip color="blue" variant="outline">
+                    No have thumbnail
+                  </Chip>
+                )}
               </Box>
             ),
           },
@@ -128,18 +116,22 @@ const ExamsTable = ({ data }: ExamTableProps) => {
           gap: "16px",
           padding: "16px",
         }}>
-        {/* <img alt="avatar" height={200} src={row.original.avatar} style={{ borderRadius: "50%" }} />
-        <Box sx={{ textAlign: "center" }}>
-          <Title>Signature Catch Phrase:</Title>
-          <Text>&quot;{row.original.signatureCatchPhrase}&quot;</Text>
-        </Box> */}
+        <PartExpanded />
       </Box>
     ),
-    renderRowActionMenuItems: () => (
-      <>
-        <Menu.Item icon={<IconUserCircle />}>View Profile</Menu.Item>
-        <Menu.Item icon={<IconSend />}>Send Email</Menu.Item>
-      </>
+    renderRowActions: ({ row }) => (
+      <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+        <ActionIcon
+          color="orange"
+          onClick={() => {
+            table.setEditingRow(row);
+          }}>
+          <IconEdit />
+        </ActionIcon>
+        <ActionIcon color="red" onClick={() => {}}>
+          <IconTrash />
+        </ActionIcon>
+      </Box>
     ),
     renderTopToolbar: ({ table }) => {
       const handleDeactivate = () => {
@@ -152,11 +144,6 @@ const ExamsTable = ({ data }: ExamTableProps) => {
           alert("activating " + row.getValue("name"));
         });
       };
-      const handleContact = () => {
-        table.getSelectedRowModel().flatRows.map((row) => {
-          alert("contact " + row.getValue("name"));
-        });
-      };
       return (
         <Flex p="md" justify="space-between">
           <Flex gap="xs">
@@ -166,13 +153,10 @@ const ExamsTable = ({ data }: ExamTableProps) => {
           </Flex>
           <Flex sx={{ gap: "8px" }}>
             <Button color="red" disabled={!table.getIsSomeRowsSelected()} onClick={handleDeactivate} variant="filled">
-              Deactivate
+              Delete
             </Button>
             <Button color="green" disabled={!table.getIsSomeRowsSelected()} onClick={handleActivate} variant="filled">
               Activate
-            </Button>
-            <Button color="blue" disabled={!table.getIsSomeRowsSelected()} onClick={handleContact} variant="filled">
-              Contact
             </Button>
           </Flex>
         </Flex>
@@ -180,5 +164,4 @@ const ExamsTable = ({ data }: ExamTableProps) => {
     },
   });
   return <MantineReactTable table={table} />;
-};
-export default ExamsTable;
+}

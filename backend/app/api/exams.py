@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 import logging
 
@@ -64,55 +64,56 @@ async def get_question_groups_by_part_id(part_id: str, db: Session = Depends(get
 async def post_create_new_examination_items(
     db: Session = Depends(get_db), exam: ExamInput = None
 ):
-    # try:
-    return service.create_new_examination(db, exam)
+    '''
+    Create new examination
+    '''
+    try:
+        return service.create_new_examination(db, exam)
+    except:
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'message': 'Can\'t not process'})
 
 
-# except:
-#     return HTTPException(400, {'message': 'Can\'t not process'})
+# @router.post("/question-groups", tags=["Question Groups"])
+# async def post_create_new_question_groups(
+#     db: Session = Depends(get_db), question_group: QuestionGroupInput = None
+# ):
+#     return service.create_new_question_group(db, question_group)
 
 
-@router.post("/question-groups", tags=["Question Groups"])
-async def post_create_new_question_groups(
-    db: Session = Depends(get_db), question_group: QuestionGroupInput = None
-):
-    return service.create_new_question_group(db, question_group)
-
-
-@router.post("/{exam_id}/parts", tags=["Part"])
-async def post_create_new_examination_items(
-    exam_id: str, name: str, db: Session = Depends(get_db)
-):
-    part = PartInput(exam_id=exam_id, name=name)
-    return service.create_new_part(db, part)
+# @router.post("/{exam_id}/parts", tags=["Part"])
+# async def post_create_new_examination_items(
+#     exam_id: str, name: str, db: Session = Depends(get_db)
+# ):
+#     part = PartInput(exam_id=exam_id, name=name)
+#     return service.create_new_part(db, part)
 
 
 # Parts
-@router.get("/parts", tags=["Parts"])
-async def get_all_parts(db: Session = Depends(get_db)):
-    return service.get_all_parts(db)
+# @router.get("/parts", tags=["Parts"])
+# async def get_all_parts(db: Session = Depends(get_db)):
+#     return service.get_all_parts(db)
 
 
-@router.post("/questions", tags=["Questions"])
-async def post_create_new_question(
-    db: Session = Depends(get_db), question: QuestionInputGroup = None
-):
-    return service.create_new_question(db, question)
+# @router.post("/questions", tags=["Questions"])
+# async def post_create_new_question(
+#     db: Session = Depends(get_db), question: QuestionInputGroup = None
+# ):
+#     return service.create_new_question(db, question)
 
 
-@router.put("/question-groups/{question_group_id}", tags=["Question Groups"])
-async def update_question_group(
-    db: Session = Depends(get_db),
-    question_group_id: str = None,
-    data: QuestionGroupUpdate = None,
-):
-    return service.update_question_group(db, question_group_id, data)
+# @router.put("/question-groups/{question_group_id}", tags=["Question Groups"])
+# async def update_question_group(
+#     db: Session = Depends(get_db),
+#     question_group_id: str = None,
+#     data: QuestionGroupUpdate = None,
+# ):
+#     return service.update_question_group(db, question_group_id, data)
 
 
-@router.put("/questions/{question_id}", tags=["Questions"])
-async def update_question(
-    db: Session = Depends(get_db),
-    question_id: str = None,
-    data: QuestionUpdate = None,
-):
-    return service.update_question_answer(db, question_id, data)
+# @router.put("/questions/{question_id}", tags=["Questions"])
+# async def update_question(
+#     db: Session = Depends(get_db),
+#     question_id: str = None,
+#     data: QuestionUpdate = None,
+# ):
+#     return service.update_question_answer(db, question_id, data)

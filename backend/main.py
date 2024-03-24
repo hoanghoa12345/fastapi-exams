@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api import users, exams
+from app.api import users, exams, parts, question_group
 
 APP_NAME = 'Exam API'
 APP_VERSION = '0.0.1'
@@ -29,6 +29,8 @@ app.add_middleware(
 )
 app.include_router(users.router)
 app.include_router(exams.router)
+app.include_router(parts.router)
+app.include_router(question_group.router)
 app.mount("/files", StaticFiles(directory="uploads"), name="files")
 
 @app.get('/')

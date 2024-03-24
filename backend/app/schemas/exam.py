@@ -5,6 +5,12 @@ from typing import List, Optional
 class ExamInput(BaseModel):
     name: str
     audio_file: str | None
+    type: Optional[str]
+    date: Optional[str]
+    duration: Optional[str]
+    thumbnail_path: Optional[str]
+    description: Optional[str]
+    is_published: Optional[str]
 
 
 class PartInput(BaseModel):
@@ -14,7 +20,11 @@ class PartInput(BaseModel):
 
 
 class QuestionGroupInput(BaseModel):
+    name: str
+    paragraph: Optional[str]
+    image: str | None
     part_id: str
+    group_index: int
 
 
 class QuestionInput(BaseModel):

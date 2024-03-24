@@ -1,9 +1,7 @@
-import { Box } from "@mantine/core";
+import { Box, Button } from "@mantine/core";
 
-export default function PartExpanded (){
-
-    return (<Box>
-        PartExpaned
-    </Box>)
-
+export default function PartExpanded() {
+  return <Box>
+    <Button>Create</Button>
+  </Box>;
 }
