@@ -30,11 +30,11 @@ const CreateTest = () => {
           Create
         </Button>
       </Stack>
-      <Card>
-        <CardBody>
+      {/* <Card> */}
+        {/* <CardBody> */}
           <ExamsTable data={exams} />
-        </CardBody>
-      </Card>
+        {/* </CardBody> */}
+      {/* </Card> */}
       <ModalCreate isOpen={open} onClose={() => setOpen(false)} handleReload={handleReload} />
     </>
   );
